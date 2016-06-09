@@ -56,13 +56,14 @@
 	}
 
 	function renderBackground() {
+		c2d.fillStyle = "red";
 		// clear drawings from previous update (pen resets to [0, 0]),
 		c2d.clearRect(0, 0, canvasW, canvasH);
         // draw fresh background of sky and ground
-      	/*c2d.fillStyle = sky;
-      	c2d.fillRect(0, 0, w, hh);
-      	c2d.fillStyle = ground;
-		c2d.fillRect(0, hh, w, h);*/
+      	c2d.fillStyle = "red";
+      	c2d.fillRect(0, 0, canvasW, canvasH);
+      	//c2d.fillStyle = ground;
+		//c2d.fillRect(0, hh, w, h);
 	}	
 
 }(this.LP = this.LP || {}));
