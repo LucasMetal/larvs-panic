@@ -13,7 +13,9 @@
         height = 10,
         previousX = x,
         previousY = y;
-        paths = new Array();
+        paths = new Array(),
+        lastPathX = x,
+        lastPathY = y;
 
     myPlayer.update = function(tFrame, input){
       previousX = X;
@@ -37,13 +39,49 @@
 
       isFiring = input.fire;
 
+      var previousPoint = map[previousX + canvasW * previousY]; 
+      var currentPoint = map[X + canvasW * Y];
+   
       // If it's firing we update the path, otherwise he can't move outside
       if (isFiring){
-        map[X + canvasW * Y] = 'P';
-      }
-      else if (getMapCoordinate(X, Y) !== 'P'){
+
+        // Nothing more to calculate
+        if (previousX === X && previousY === Y) return;
+
+        if (currentPoint === 'T'){
+            // We have bit our own tail
+            console.log("tail bit");
+            X = previousX;
+            Y = previousY;      
+        } else if (currentPoint === 'P' && previousPoint !== 'P'){
+            console.log("path close!", previousPoint);
+            // Transform all temporal paths into final paths
+            for (var i = map.length - 1; i >= 0; i--) {
+              if (map[i] == 'T') map[i] = 'P';
+            }
+            lastPathY = Y;
+            lastPathX = X;
+        }
+        else
+        { // We are just drawing
+          map[X + canvasW * Y] = 'T';
+        }
+      } else if (currentPoint === 'P'){
+        // We are just walking on a path
+        lastPathY = Y;
+        lastPathX = X;
+      } else if (previousPoint === 'T'){
+        // We were drawing, but we stop without closing a path, just reset the path and go back to last path known
+        // Transform all temporal paths into filled
+        for (var i = map.length - 1; i >= 0; i--) {
+          if (map[i] == 'T') map[i] = 'F';
+        }
+        X = lastPathX;
+        Y = lastPathY;
+      } else {
+        // We are not drawing, and we are trying to walk outside a path, we can't do that
         X = previousX;
-        Y = previousY;
+        Y = previousY;      
       }
     };
 
@@ -122,15 +160,21 @@
             data[i*4+3] = 0; // Transparent, don't care the color
             break;
           case 'F': // Filled
-            data[i*4] = 0; // Blue, 100% opaque
+            data[i*4]   = 0; // Blue, 100% opaque
             data[i*4+1] = 0;
             data[i*4+2] = 255;
             data[i*4+3] = 255;
             break;
           case 'P': // Path
-            data[i*4] = 0; // White, 100% opaque // TODO: Make this 255
+            data[i*4]   = 255; // White, 100% opaque
             data[i*4+1] = 255;
             data[i*4+2] = 255;
+            data[i*4+3] = 255;
+            break;
+          case 'T': // Temporal path
+            data[i*4]   = 0; // Green, 100% opaque
+            data[i*4+1] = 255;
+            data[i*4+2] = 0;
             data[i*4+3] = 255;
             break;
         }
@@ -138,6 +182,29 @@
           
       ctxPlayer.putImageData(imgData,0,0);
     };
+
+    function generateRandomClearedZone(){
+      var centerY = canvasH/2, 
+          centerX = canvasW/2;
+
+      // For now just create an empty cell right in the center, and eight path cells around
+      // We do that in clockwise order starting at 12
+      map[ centerY * canvasW + centerX ] = 'E';
+      map[ (centerY - 1) * canvasW + centerX ] = 'P';
+      map[ (centerY - 1) * canvasW + centerX + 1] = 'P';
+      map[ centerY * canvasW + centerX + 1] = 'P';
+      map[ (centerY + 1) * canvasW + centerX + 1] = 'P';
+      map[ (centerY + 1) * canvasW + centerX ] = 'P';
+      map[ (centerY + 1) * canvasW + centerX - 1] = 'P';
+      map[ centerY * canvasW + centerX - 1] = 'P';
+      map[ (centerY - 1) * canvasW + centerX - 1] = 'P';
+
+      // Player starts at 12
+      X = centerX;
+      Y = centerY - 1;
+      lastPathX = X;
+      lastPathY = Y;
+    }
     
     // Init code
 
@@ -146,8 +213,10 @@
         map = new Array(canvasW*canvasH);
     
     for (var i = map.length - 1; i >= 0; i--) {
-      map[i] = 'E';
+      map[i] = 'F';
     }
+
+    generateRandomClearedZone();
     
     return myPlayer;
   };
