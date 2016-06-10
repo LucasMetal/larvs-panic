@@ -12,7 +12,9 @@ function Player(x,y, canvasW, canvasH) {
   this.previousY = y;
   this.paths = new Array();
 
-  
+  this.getMapCoordinate = function(x,y){
+    return map[y * this.canvasW + x];
+  }
 
   this.update = function(tFrame, input){
     this.previousX = this.X;
@@ -36,8 +38,13 @@ function Player(x,y, canvasW, canvasH) {
 
     this.isFiring = input.fire;
 
+    // If it's firing we update the path, otherwise he can't move outside
     if (this.isFiring){
       map[this.X + this.canvasW * this.Y] = 'P';
+    }
+    else if (this.getMapCoordinate(this.X, this.Y) !== 'P'){
+      this.X = this.previousX;
+      this.Y = this.previousY;
     }
   };
 
