@@ -2,8 +2,7 @@
 
 	console.log("init!");
 
-	var canvas,
-		c2d,
+	var c2d,
 		canvasH,
 		canvasW,
 		actors = new Array();
@@ -21,7 +20,7 @@
 	};
 
   	function initializeCanvas(canvasId) {
-		canvas = document.getElementById('canvas');
+		var canvas = document.getElementById('canvas');
 		c2d = canvas.getContext('2d');
 		c2d.lineWidth = 1;
 		c2d.globalAlpha = 1;
@@ -64,6 +63,6 @@
       	c2d.fillRect(0, 0, canvasW, canvasH);
       	//c2d.fillStyle = ground;
 		//c2d.fillRect(0, hh, w, h);
-	}	
+	}
 
 }(this.LP = this.LP || {}));
