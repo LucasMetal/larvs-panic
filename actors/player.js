@@ -48,19 +48,24 @@
         // Nothing more to calculate
         if (previousX === X && previousY === Y) return;
 
-        if (currentPoint === 'T'){
-            // We have bit our own tail
-            console.log("tail bit");
+        if (currentPoint === 'T' || currentPoint === 'E'){
+            // We have bit our own tail or the pixel was empty
+            console.log("tail bit or empty pixel");
             X = previousX;
             Y = previousY;      
-        } else if (currentPoint === 'P' && previousPoint !== 'P'){
+        } else if (currentPoint === 'P'){
+
+          lastPathY = Y;
+          lastPathX = X;
+        
+          if (previousPoint !== 'P'){            
             console.log("path close!", previousPoint);
             // Transform all temporal paths into final paths
             for (var i = map.length - 1; i >= 0; i--) {
-              if (map[i] == 'T') map[i] = 'P';
-            }
-            lastPathY = Y;
-            lastPathX = X;
+              if (map[i] === 'T') map[i] = 'P';
+            }            
+          }
+
         }
         else
         { // We are just drawing
@@ -74,7 +79,7 @@
         // We were drawing, but we stop without closing a path, just reset the path and go back to last path known
         // Transform all temporal paths into filled
         for (var i = map.length - 1; i >= 0; i--) {
-          if (map[i] == 'T') map[i] = 'F';
+          if (map[i] === 'T') map[i] = 'F';
         }
         X = lastPathX;
         Y = lastPathY;
