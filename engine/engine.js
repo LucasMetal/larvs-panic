@@ -12,7 +12,7 @@
 
 		initializeCanvas(canvasId);
 
-		actors.push (new Player(10,10, canvasW, canvasH));
+		actors.push (LP.player(10,10, canvasW, canvasH));
 
 		LP.initInput();
 
