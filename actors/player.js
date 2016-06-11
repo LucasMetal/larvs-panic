@@ -29,16 +29,16 @@
         myPlayer.X = Math.max(0, myPlayer.X - speed); 
       }
 
-      if (input.right && ( myPlayer.X + width) < canvasW){
-        myPlayer.X = Math.min(canvasW - width, myPlayer.X + speed); 
+      if (input.right && myPlayer.X < canvasW){
+        myPlayer.X = Math.min(canvasW, myPlayer.X + speed); 
       }
 
       if (input.up && myPlayer.Y > 0){
         myPlayer.Y = Math.max(0, myPlayer.Y - speed); 
       }
 
-      if (input.down && (myPlayer.Y + height) < canvasH){
-        myPlayer.Y = Math.min(canvasH - height, myPlayer.Y + speed); 
+      if (input.down && myPlayer.Y < canvasH){
+        myPlayer.Y = Math.min(canvasH, myPlayer.Y + speed); 
       }
 
       isFiring = input.fire;
@@ -121,7 +121,7 @@
       
       canvasContext.globalAlpha = haveJustDied ? 0.5 : 1;
       canvasContext.fillStyle = isFiring ? "orange" : "black";
-      canvasContext.fillRect(myPlayer.X, myPlayer.Y, 10, 10);
+      canvasContext.fillRect(myPlayer.X - width/2, myPlayer.Y - height/2, width, height);
       canvasContext.globalAlpha = 1;
     };
 
@@ -130,7 +130,7 @@
     };
 
     myPlayer.checkCollision = function(badguyHitbox, tFrame){
-      if (haveJustDied || !areCollisioning(myPlayer.getHitbox(), badguyHitbox)) return false;
+      if (!isFiring || haveJustDied || !areCollisioning(myPlayer.getHitbox(), badguyHitbox)) return false;
 
       // We got hit!
       --myPlayer.lifes;

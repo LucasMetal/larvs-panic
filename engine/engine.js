@@ -7,7 +7,7 @@
 			canvasH,
 			canvasW,
 			player,
-			actors = new Array(),
+			actors,
 			meter,
 			statsElement,
 			lastStatsUpdateTime = 0,
