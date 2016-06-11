@@ -24,11 +24,18 @@
 			LP.initInput();
 
 			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
-			
+
 			resetLevel();
 
-			main();
+			mainLoop();
 		};
+
+		myEngine.playerDied = function(){
+			console.log("Player died");
+			resetLevel();
+		};
+
+		// Private functions
 	
   		function initializeCanvas(canvasId) {
 			var canvas = document.getElementById('canvas');
@@ -49,10 +56,10 @@
 			actors.push (player);
   		}
 
-		function main (tFrame) {
+		function mainLoop (tFrame) {
     		update( tFrame ); //Call your update method. In our case, we give it rAF's timestamp.
     		render();
-			window.requestAnimationFrame( main );
+			window.requestAnimationFrame( mainLoop );
 		};
 
 		function update(tFrame){

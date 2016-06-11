@@ -134,6 +134,9 @@
 
       // We got hit!
       --myPlayer.lifes;
+
+      if (myPlayer.lifes === 0) LP.engine.playerDied();
+
       haveJustDied = true;
       dieTime = tFrame;
       respawn();
