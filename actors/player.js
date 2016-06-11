@@ -116,7 +116,7 @@
       canvasContext.drawImage(playerCanvas,0,0);      
       
       canvasContext.globalAlpha = haveJustDied ? 0.5 : 1;
-      canvasContext.fillStyle = isFiring ? "orange" : "black";
+      canvasContext.fillStyle = isFiring ? "orange" : "green";
       canvasContext.fillRect(myPlayer.X - width/2, myPlayer.Y - height/2, width, height);
       canvasContext.globalAlpha = 1;
     };
@@ -194,9 +194,9 @@
             data[i*4+3] = 0; // Transparent, don't care the color
             break;
           case 'F': // Filled
-            data[i*4]   = 0; // Blue, 100% opaque
+            data[i*4]   = 0; // Dark Blue, 100% opaque
             data[i*4+1] = 0;
-            data[i*4+2] = 255;
+            data[i*4+2] = 100;
             data[i*4+3] = 255;
             break;
           case 'P': // Path
