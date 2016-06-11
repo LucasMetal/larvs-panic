@@ -32,7 +32,16 @@
 
 		myEngine.playerDied = function(){
 			console.log("Player died");
-			resetLevel();
+			resetLevel();			
+		};
+
+		myEngine.areaCleared = function(percentage){
+			clearedPercentage += percentage;
+
+			if (clearedPercentage >= 80){
+				console.log("Win!");
+				resetLevel();
+			}
 		};
 
 		// Private functions
@@ -51,7 +60,8 @@
   		function resetLevel(){
   			actors = [];
 			player = LP.player(10,10, canvasW, canvasH);
-
+			clearedPercentage = 0;
+			
 			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
 			actors.push (player);
   		}

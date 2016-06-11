@@ -65,7 +65,7 @@
           if (previousPoint !== 'P'){            
             console.log("path closed!", previousPoint);
             // Transform all temporal paths into final paths
-            replaceValuesInMap('T','P');
+            var percentageCleared = replaceValuesInMap('T','P');
 
             // We fill two zones, starting from the previous position 
             // TODO: Fix previous position selection
@@ -77,10 +77,15 @@
                 zone2 += floodFill(map, canvasW, previousX + 1, previousY + 1, 'F', '2');
 
             // We choose the smallest zone, the other one gets reset to F
-            replaceValuesInMap(zone1 < zone2 ? '1' : '2','E');
+            percentageCleared += replaceValuesInMap(zone1 < zone2 ? '1' : '2','E');
             replaceValuesInMap(zone1 < zone2 ? '2' : '1','F');
-          }
 
+            percentageCleared = Math.round(percentageCleared/map.length * 100);
+
+            // Handle points and notify engine
+            addPointsByAreaCleared(percentageCleared);
+            LP.engine.areaCleared(percentageCleared);
+          }
         }
         else
         { // We are just drawing
@@ -112,6 +117,26 @@
       replaceValuesInMap('T','F');
       myPlayer.X = lastPathX;
       myPlayer.Y = lastPathY;
+    }
+
+    function addPointsByAreaCleared(percentageCleared){
+      var pointsMultiplier;
+
+      if (percentageCleared <= 1){
+        pointsMultiplier = 1;
+      } else if (percentageCleared <= 2){
+        pointsMultiplier = 3;
+      } else if (percentageCleared <= 10){
+        pointsMultiplier = 5;
+      } else if (percentageCleared <= 50){
+        pointsMultiplier = 10;
+      } else if (percentageCleared <= 70){
+        pointsMultiplier = 30;
+      } else {
+        pointsMultiplier = 50;
+      }
+
+      myPlayer.points += percentageCleared * pointsMultiplier;
     }
 
     myPlayer.render = function(canvasContext){  
@@ -148,9 +173,15 @@
     // Private functions
 
     function replaceValuesInMap(oldVal, newVal){
+      var replacedCount = 0;
       for (var i = map.length - 1; i >= 0; i--) {
-        if (map[i] === oldVal) map[i] = newVal;
+        if (map[i] === oldVal){
+          map[i] = newVal;
+          ++replacedCount;
+        }          
       }
+
+      return replacedCount;
     }
         
     function getMapCoordinate(x,y){
