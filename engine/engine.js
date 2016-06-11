@@ -5,7 +5,8 @@
 	var c2d,
 		canvasH,
 		canvasW,
-		actors = new Array();
+		actors = new Array(),
+		meter;
 
 	// This method is initially called by onLoad event on index
 	LP.init = function(canvasId){
@@ -15,6 +16,8 @@
 		actors.push (LP.player(10,10, canvasW, canvasH));
 
 		LP.initInput();
+
+		meter = new FPSMeter();
 
 		main();
 	};
@@ -31,9 +34,9 @@
   	}	
 
 	function main (tFrame) {
-		window.requestAnimationFrame( main );
     	update( tFrame ); //Call your update method. In our case, we give it rAF's timestamp.
     	render();
+		window.requestAnimationFrame( main );
 	};
 
 	function update(tFrame){
@@ -52,6 +55,7 @@
 			actors[i].render(c2d);
 		}
 		//console.log("render!!");
+		meter.tick();
 	}
 
 	function renderBackground() {
