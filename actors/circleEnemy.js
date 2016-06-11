@@ -1,23 +1,19 @@
 (function(LP) {
 
-  LP.player = function (x,y, canvasW, canvasH) {
-    var myPlayer = {},
-        lifes = 3,
+  LP.circleEnemy = function (x,y, canvasW, canvasH) {
+    var myEnemy = {},
         speed = 1,
         X = x,
         Y = y,
         canvasW = canvasW,
         canvasH = canvasH,
         isFiring = false,
-        width = 10,
-        height = 10,
+        radius = 10,
         previousX = x,
         previousY = y;
-        paths = new Array(),
-        lastPathX = x,
-        lastPathY = y;
 
-    myPlayer.update = function(tFrame, input){
+    myEnemy.update = function(tFrame, input){
+      /*
       previousX = X;
       previousY = Y;
 
@@ -97,19 +93,22 @@
         X = previousX;
         Y = previousY;      
       }
+      */
     };
 
-    myPlayer.render = function(canvasContext){  
+    myEnemy.render = function(canvasContext){  
       
-      updatePlayerCanvasFromMap();
-      canvasContext.drawImage(playerCanvas,0,0);
-      
-      canvasContext.fillStyle = isFiring ? "orange" : "black";
-      canvasContext.fillRect(X, Y, 10, 10);
+      canvasContext.closePath();
+      canvasContext.beginPath();
+      canvasContext.moveTo(X,Y);
+      canvasContext.ellipse(X, Y, radius, radius, 0, 0, 2 * Math.PI);      
+      canvasContext.fillStyle = "grey";
+      canvasContext.fill();
     };
     
     // Private functions
 
+/*
     function replaceValuesInMap(oldVal, newVal){
       for (var i = map.length - 1; i >= 0; i--) {
         if (map[i] === oldVal) map[i] = newVal;
@@ -140,95 +139,10 @@
       
       return canvas;
     }
-
-    function updatePlayerCanvasFromMap(){
-
-      // TODO: This two lines can be taken out, the data is always the same
-      // TODO: Maybe also an ArrayBuffer to improve speed
-      // https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
-      var imgData = ctxPlayer.getImageData(0,0, canvasW, canvasH);
-      var data = imgData.data;
-      
-      for (var i = map.length - 1; i >= 0; i--) {
-        switch (map[i]){
-          case 'E': // Empty
-            data[i*4+3] = 0; // Transparent, don't care the color
-            break;
-          case 'F': // Filled
-            data[i*4]   = 0; // Blue, 100% opaque
-            data[i*4+1] = 0;
-            data[i*4+2] = 255;
-            data[i*4+3] = 255;
-            break;
-          case 'P': // Path
-            data[i*4]   = 255; // White, 100% opaque
-            data[i*4+1] = 255;
-            data[i*4+2] = 255;
-            data[i*4+3] = 255;
-            break;
-          case 'T': // Temporal path
-            data[i*4]   = 0; // Green, 100% opaque
-            data[i*4+1] = 255;
-            data[i*4+2] = 0;
-            data[i*4+3] = 255;
-            break;
-        }
-      }
-          
-      ctxPlayer.putImageData(imgData,0,0);
-    };
-
-    function generateRandomClearedZone(){
-      var centerY = canvasH/2, 
-          centerX = canvasW/2;
-
-      // For now just create an empty cell right in the center, and eight path cells around
-      // We do that in clockwise order starting at 12
-      map[ centerY * canvasW + centerX ] = 'E';
-      map[ (centerY - 1) * canvasW + centerX ] = 'P';
-      map[ (centerY - 1) * canvasW + centerX + 1] = 'P';
-      map[ centerY * canvasW + centerX + 1] = 'P';
-      map[ (centerY + 1) * canvasW + centerX + 1] = 'P';
-      map[ (centerY + 1) * canvasW + centerX ] = 'P';
-      map[ (centerY + 1) * canvasW + centerX - 1] = 'P';
-      map[ centerY * canvasW + centerX - 1] = 'P';
-      map[ (centerY - 1) * canvasW + centerX - 1] = 'P';
-
-      // Player starts at 12
-      X = centerX;
-      Y = centerY - 1;
-      lastPathX = X;
-      lastPathY = Y;
-    }
-
-    function floodFill(mapData, mapWidth, startingX, startingY, oldVal, newVal){
-      
-      var pixelStack = [{x: startingX, y: startingY}]; //the stack of pixels to check
-      var pixelsFilled = 0;
-
-      while (pixelStack.length > 0) 
-      {
-        var current = pixelStack.pop();
-        var index = current.y * mapWidth + current.x;
-
-        if(mapData[index] !== oldVal) continue;
-    
-        mapData[index] = newVal;
-        pixelsFilled++;
-
-        // We don't bother checking limits, undefined will be different from oldVal
-        pixelStack.push({x: current.x+1, y: current.y   }); //right
-        pixelStack.push({x: current.x-1, y: current.y   }); //left
-        pixelStack.push({x: current.x,   y: current.y+1 }); //up
-        pixelStack.push({x: current.x,   y: current.y-1 }); //down
-      }
-
-      console.log("Pixels filled", pixelsFilled);
-      return pixelsFilled;
-    }
-
+   */
     // Init code
 
+/*
     var playerCanvas = createCanvas(canvasW, canvasH);
     var ctxPlayer = playerCanvas.getContext('2d'),
         map = new Array(canvasW*canvasH);
@@ -238,7 +152,7 @@
     }
 
     generateRandomClearedZone();
-    
-    return myPlayer;
+  */  
+    return myEnemy;
   };
 }(this.LP = this.LP || {}));

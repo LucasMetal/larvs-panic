@@ -13,6 +13,7 @@
 
 		initializeCanvas(canvasId);
 
+		actors.push (LP.circleEnemy(10,10, canvasW, canvasH));
 		actors.push (LP.player(10,10, canvasW, canvasH));
 
 		LP.initInput();
@@ -59,14 +60,9 @@
 	}
 
 	function renderBackground() {
-		c2d.fillStyle = "red";
-		// clear drawings from previous update (pen resets to [0, 0]),
-		c2d.clearRect(0, 0, canvasW, canvasH);
-        // draw fresh background of sky and ground
+		// TODO: Render an image
       	c2d.fillStyle = "red";
       	c2d.fillRect(0, 0, canvasW, canvasH);
-      	//c2d.fillStyle = ground;
-		//c2d.fillRect(0, hh, w, h);
 	}
 
 }(this.LP = this.LP || {}));
