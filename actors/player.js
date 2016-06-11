@@ -61,9 +61,16 @@
           if (previousPoint !== 'P'){            
             console.log("path close!", previousPoint);
             // Transform all temporal paths into final paths
-            for (var i = map.length - 1; i >= 0; i--) {
-              if (map[i] === 'T') map[i] = 'P';
-            }            
+            replaceValuesInMap('T','P');
+
+            // We fill two zones, starting from the previous position 
+            // TODO: Fix previous position selection
+            var zone1 = floodFill(map, canvasW, previousX, previousY - 1, 'F', '1');
+            var zone2 = floodFill(map, canvasW, previousX, previousY + 1, 'F', '2');
+
+            // We choose the smallest zone, the other one gets reset to F
+            replaceValuesInMap(zone1 < zone2 ? '1' : '2','E');
+            replaceValuesInMap(zone1 < zone2 ? '2' : '1','F');
           }
 
         }
@@ -78,9 +85,7 @@
       } else if (previousPoint === 'T'){
         // We were drawing, but we stop without closing a path, just reset the path and go back to last path known
         // Transform all temporal paths into filled
-        for (var i = map.length - 1; i >= 0; i--) {
-          if (map[i] === 'T') map[i] = 'F';
-        }
+        replaceValuesInMap('T','F');
         X = lastPathX;
         Y = lastPathY;
       } else {
@@ -90,41 +95,22 @@
       }
     };
 
-    myPlayer.render = function(canvasContext){
-
-      var isPlayerInSomePath = false;
-      
-      /*
-      if (isFiring){
-      
-        // Set line styles
-        canvasContext.strokeStyle = 'white';
-        canvasContext.lineWidth = 3;
-      
-        var path = new Path2D();
-        path.moveTo(previousX, previousY);
-        path.lineTo(X, Y);      
-        paths.push(path);
-      }
-      */
-      
-      /*
-      for (var i = paths.length - 1; i >= 0; i--) {
-        canvasContext.stroke(paths[i]);
-      
-        if (canvasContext.isPointInPath(paths[i], X, Y)) isPlayerInSomePath = true;
-      }
-      */
+    myPlayer.render = function(canvasContext){  
       
       updatePlayerCanvasFromMap();
       canvasContext.drawImage(playerCanvas,0,0);
       
       canvasContext.fillStyle = isFiring ? "orange" : "black";
-      //canvasContext.fillStyle = isPlayerInSomePath ? "orange" : "black";
       canvasContext.fillRect(X, Y, 10, 10);
     };
     
     // Private functions
+
+    function replaceValuesInMap(oldVal, newVal){
+      for (var i = map.length - 1; i >= 0; i--) {
+        if (map[i] === oldVal) map[i] = newVal;
+      }
+    }
         
     function getMapCoordinate(x,y){
       return map[y * canvasW + x];
@@ -210,7 +196,33 @@
       lastPathX = X;
       lastPathY = Y;
     }
+
+    function floodFill(mapData, mapWidth, startingX, startingY, oldVal, newVal){
+      
+      var pixelStack = [{x: startingX, y: startingY}]; //the stack of pixels to check
+      var pixelsFilled = 0;
+
+      while (pixelStack.length > 0) 
+      {
+        var current = pixelStack.pop();
+        var index = current.y * mapWidth + current.x;
+
+        if(mapData[index] !== oldVal) continue;
     
+        mapData[index] = newVal;
+        pixelsFilled++;
+
+        // We don't bother checking limits, undefined will be different from oldVal
+        pixelStack.push({x: current.x+1, y: current.y   }); //right
+        pixelStack.push({x: current.x-1, y: current.y   }); //left
+        pixelStack.push({x: current.x,   y: current.y+1 }); //up
+        pixelStack.push({x: current.x,   y: current.y-1 }); //down
+      }
+
+      console.log("Pixels filled", pixelsFilled);
+      return pixelsFilled;
+    }
+
     // Init code
 
     var playerCanvas = createCanvas(canvasW, canvasH);
