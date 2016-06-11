@@ -20,6 +20,11 @@
       
       if (!myBullet.alive) return;
 
+      if (player.checkCollision(myBullet.getHitbox(), tFrame)){
+        myBullet.alive = false;
+        return;
+      }
+
       previousX = X;
       previousY = Y;
 
@@ -114,6 +119,10 @@
       canvasContext.ellipse(X, Y, radius, radius, 0, 0, 2 * Math.PI);      
       canvasContext.fillStyle = "yellow";
       canvasContext.fill();
+    };
+
+    myBullet.getHitbox = function(){
+      return {x: X, y: Y, width: radius, height: radius};
     };
     
     // Private functions

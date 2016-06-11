@@ -17,6 +17,8 @@
         player = player;
 
     myEnemy.update = function(tFrame){
+
+      player.checkCollision(myEnemy.getHitbox(), tFrame);
       
       previousX = X;
       previousY = Y;
@@ -129,6 +131,10 @@
       canvasContext.ellipse(X, Y, radius, radius, 0, 0, 2 * Math.PI);      
       canvasContext.fillStyle = "grey";
       canvasContext.fill();
+    };
+
+    myEnemy.getHitbox = function(){
+      return {x: X, y: Y, width: radius, height: radius};
     };
     
     // Private functions

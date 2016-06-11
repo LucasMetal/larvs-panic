@@ -16,9 +16,9 @@
         previousY = y;
         paths = new Array(),
         lastPathX = x,
-        lastPathY = y;
-
-
+        lastPathY = y,
+        haveJustDied = false,
+        dieTime = null;
 
     myPlayer.update = function(tFrame, input){
       previousX = myPlayer.X;
@@ -100,15 +100,39 @@
         myPlayer.X = previousX;
         myPlayer.Y = previousY;      
       }
+
+      // If 10 seconds passed since we day, we are fully back in life now ;)
+      if (haveJustDied && (tFrame - dieTime > 10 * 1000)){
+        console.log("haveJustDied set to false");
+        haveJustDied = false;
+      }
     };
 
     myPlayer.render = function(canvasContext){  
       
       updatePlayerCanvasFromMap();
-      canvasContext.drawImage(playerCanvas,0,0);
+      canvasContext.drawImage(playerCanvas,0,0);      
       
+      canvasContext.globalAlpha = haveJustDied ? 0.5 : 1;
       canvasContext.fillStyle = isFiring ? "orange" : "black";
       canvasContext.fillRect(myPlayer.X, myPlayer.Y, 10, 10);
+      canvasContext.globalAlpha = 1;
+    };
+
+    myPlayer.getHitbox = function(){
+      return {x: myPlayer.X, y: myPlayer.Y, width: width, height: height};
+    };
+
+    myPlayer.checkCollision = function(badguyHitbox, tFrame){
+      if (haveJustDied || !areCollisioning(myPlayer.getHitbox(), badguyHitbox)) return false;
+
+      --lifes;
+      haveJustDied = true;
+      dieTime = tFrame;
+
+      console.log("player hit. Remaining lifes: ", lifes, tFrame);
+
+      return true;      
     };
     
     // Private functions
@@ -228,6 +252,14 @@
 
       console.log("Pixels filled", pixelsFilled);
       return pixelsFilled;
+    }
+
+    function areCollisioning(rect1, rect2){
+      //console.log("areCollisioning", rect1, rect2);
+      return (rect1.x < rect2.x + rect2.width &&
+              rect1.x + rect1.width > rect2.x &&
+              rect1.y < rect2.y + rect2.height &&
+              rect1.height + rect1.y > rect2.y);
     }
 
     // Init code
