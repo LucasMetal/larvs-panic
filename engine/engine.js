@@ -1,83 +1,94 @@
 (function(LP) {
 
-	var c2d,
-		canvasH,
-		canvasW,
-		actors = new Array(),
-		meter,
-		statsElement,
-		lastStatsUpdateTime = 0,
-		clearedPercentage = 0,
-		remainingTime = 30;
+	LP.engine = function(){    
+	
+		var myEngine = {},
+			c2d,
+			canvasH,
+			canvasW,
+			player,
+			actors = new Array(),
+			meter,
+			statsElement,
+			lastStatsUpdateTime = 0,
+			clearedPercentage = 0,
+			remainingTime = 30;
+	
+		// This method is initially called by onLoad event on index
+		myEngine.init = function(canvasId, statsElementId, fpsMeterId){
+	
+			console.log("init!");
 
-	// This method is initially called by onLoad event on index
-	LP.init = function(canvasId, statsElementId, fpsMeterId){
+			statsElement = document.getElementById(statsElementId);
+			initializeCanvas(canvasId);			
+			LP.initInput();
 
-		console.log("init!");
+			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
+			
+			resetLevel();
 
-		statsElement = document.getElementById(statsElementId);
-		initializeCanvas(canvasId);
+			main();
+		};
+	
+  		function initializeCanvas(canvasId) {
+			var canvas = document.getElementById('canvas');
+			c2d = canvas.getContext('2d');
+			c2d.lineWidth = 1;
+			c2d.globalAlpha = 1;
+			c2d.globalCompositeOperation = 'source-over';
+			canvasW = canvas.width;
+			canvasH = canvas.height;
+			console.log('canvas initialized');
+  		}
+	
+  		function resetLevel(){
+  			actors = [];
+			player = LP.player(10,10, canvasW, canvasH);
 
-		player = LP.player(10,10, canvasW, canvasH);
+			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
+			actors.push (player);
+  		}
 
-		actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
-		actors.push (player);
-		
-		LP.initInput();
+		function main (tFrame) {
+    		update( tFrame ); //Call your update method. In our case, we give it rAF's timestamp.
+    		render();
+			window.requestAnimationFrame( main );
+		};
 
-		meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
+		function update(tFrame){
+			updateStats(tFrame);
 
-		main();
-	};
-
-  	function initializeCanvas(canvasId) {
-		var canvas = document.getElementById('canvas');
-		c2d = canvas.getContext('2d');
-		c2d.lineWidth = 1;
-		c2d.globalAlpha = 1;
-		c2d.globalCompositeOperation = 'source-over';
-		canvasW = canvas.width;
-		canvasH = canvas.height;
-		console.log('canvas initialized');
-  	}	
-
-	function main (tFrame) {
-    	update( tFrame ); //Call your update method. In our case, we give it rAF's timestamp.
-    	render();
-		window.requestAnimationFrame( main );
-	};
-
-	function update(tFrame){
-		updateStats(tFrame);
-
-		for (var i = actors.length - 1; i >= 0; i--) {
-			actors[i].update(tFrame, LP.getInput());
+			for (var i = actors.length - 1; i >= 0; i--) {
+				actors[i].update(tFrame, LP.getInput());
+			}
+			//console.log("update!!");
 		}
-		//console.log("update!!");
-	}
 
-	function render(){
+		function render(){
 
-		renderBackground();
+			renderBackground();
 
-		for (var i = actors.length - 1; i >= 0; i--) {
-			actors[i].render(c2d);
+			for (var i = actors.length - 1; i >= 0; i--) {
+				actors[i].render(c2d);
+			}
+			//console.log("render!!");
+			meter.tick();
 		}
-		//console.log("render!!");
-		meter.tick();
-	}
 
-	function renderBackground() {
-		// TODO: Render an image
-      	c2d.fillStyle = "red";
-      	c2d.fillRect(0, 0, canvasW, canvasH);
-	}
-
-	function updateStats(tFrame){
-		if (tFrame - lastStatsUpdateTime > 1000){
-			statsElement.innerText = 'Lifes: ' + player.lifes + ' | Points: ' + player.points + ' | ' + clearedPercentage + '% | Time: ' + remainingTime; 
-			lastStatsUpdateTime = tFrame;
+		function renderBackground() {
+			// TODO: Render an image
+	      	c2d.fillStyle = "red";
+	      	c2d.fillRect(0, 0, canvasW, canvasH);
 		}
-	}
+
+		function updateStats(tFrame){
+			if (tFrame - lastStatsUpdateTime > 1000){
+				statsElement.innerText = 'Lifes: ' + player.lifes + ' | Points: ' + player.points + ' | ' + clearedPercentage + '% | Time: ' + remainingTime; 
+				lastStatsUpdateTime = tFrame;
+			}
+		}
+
+		return myEngine;
+	}();
 
 }(this.LP = this.LP || {}));
