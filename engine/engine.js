@@ -10,16 +10,19 @@
 			actors,
 			meter,
 			statsElement,
+			messagesElement,
 			lastStatsUpdateTime = 0,
+			messageTimeoutHandle = null,
 			clearedPercentage = 0,
 			remainingTime = 30;
 	
 		// This method is initially called by onLoad event on index
-		myEngine.init = function(canvasId, statsElementId, fpsMeterId){
+		myEngine.init = function(canvasId, statsElementId, fpsMeterId, messagesElementId){
 	
 			console.log("init!");
 
 			statsElement = document.getElementById(statsElementId);
+			messagesElement = document.getElementById(messagesElementId);
 			initializeCanvas(canvasId);			
 			LP.initInput();
  			player = LP.player(10,10, canvasW, canvasH);
@@ -32,6 +35,7 @@
 
 		myEngine.playerDied = function(){
 			console.log("Player died");
+			myEngine.showMessage("You died :(");
 			resetLevel();			
 		};
 
@@ -40,9 +44,17 @@
 
 			if (clearedPercentage >= 80){
 				console.log("Win!");
+				myEngine.showMessage("You win!");
 				resetLevel();
 			}
 		};
+
+		myEngine.showMessage = function (message){			
+			messagesElement.innerText = message;
+			
+			if (messageTimeoutHandle) clearTimeout(messageTimeoutHandle);
+			messageTimeoutHandle = setTimeout(function(){messagesElement.innerText = ''}, 3000);		
+		}
 
 		// Private functions
 	

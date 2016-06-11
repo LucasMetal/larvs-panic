@@ -137,6 +137,7 @@
       dieTime = tFrame;
       respawn();
 
+      LP.engine.showMessage("Ouch!");
       console.log("player hit. Remaining myPlayer.lifes: ", myPlayer.lifes, tFrame);
       return true;      
     };
