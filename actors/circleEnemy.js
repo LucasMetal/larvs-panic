@@ -14,11 +14,17 @@
         directionX = 1,
         directionY = 0,
         bullets = [],
-        player = player;
+        player = player,
+        lastFireTime = 0,
+        haveJustFired = false;
 
     myEnemy.update = function(tFrame){
 
       player.checkCollision(myEnemy.getHitbox(), tFrame);
+
+      if (tFrame - lastFireTime > 1000){
+        haveJustFired = false;
+      }
       
       previousX = X;
       previousY = Y;
@@ -30,8 +36,8 @@
       }
 
       // Fires a bullet when player is on same line or column
-      if (X === player.X) fireBullet ( 0, player.Y < Y ? -1 : 1 );
-      if (Y === player.Y) fireBullet ( player.X < X ? -1 : 1, 0 );
+      if (X === player.X) fireBullet ( 0, player.Y < Y ? -1 : 1 , tFrame);
+      if (Y === player.Y) fireBullet ( player.X < X ? -1 : 1, 0 , tFrame);
 
       // Remove dead bullets and update live ones
       for (var i = bullets.length - 1; i >= 0; i--) {
@@ -139,9 +145,13 @@
     
     // Private functions
 
-    function fireBullet(xDirection, yDirection){      
+    function fireBullet(xDirection, yDirection, tFrame){
+      if (haveJustFired) return;
+
       console.log('firing bullet', xDirection, yDirection);
       bullets.push(LP.bullet(X, Y, xDirection, yDirection, canvasW, canvasH, player))
+      haveJustFired = true;
+      lastFireTime = tFrame;
     }
 /*
     function replaceValuesInMap(oldVal, newVal){
