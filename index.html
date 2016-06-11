@@ -13,14 +13,21 @@
 #canvas {
   border: 2px solid #000;
   position: absolute;
-  left: 50%;
+  left: 33%;
   margin-left: 10px;
 }
 </style>
 </head>
 
-<body onload="LP.init('canvas');">
-<canvas id="canvas" width="320" height="240"></canvas>
-<!--<canvas id="canvas" width="50" height="50"></canvas>-->
+<body onload="LP.init('canvas','stats','fpsMeter');">
+  <div id='header'>
+    <div id="fpsMeter" style="width:10%;float:left;"></div>
+    <div id="stats" style='float:right;'></div>
+  </div>
+  <br/>
+   
+  <canvas id="canvas" width="320" height="240"></canvas>
+  <!--<canvas id="canvas" width="50" height="50"></canvas>-->
+
 </body>
 </html>

@@ -4,8 +4,9 @@
     var myPlayer = {
           X : y,
           Y : y,          
+          lifes : 3,
+          points : 0
         },
-        lifes = 3,
         speed = 1,
         canvasW = canvasW,
         canvasH = canvasH,
@@ -90,11 +91,8 @@
         lastPathY = myPlayer.Y;
         lastPathX = myPlayer.X;
       } else if (previousPoint === 'T'){
-        // We were drawing, but we stop without closing a path, just reset the path and go back to last path known
-        // Transform all temporal paths into filled
-        replaceValuesInMap('T','F');
-        myPlayer.X = lastPathX;
-        myPlayer.Y = lastPathY;
+        // We were drawing, but we stop without closing a path, just respawn
+        respawn();
       } else {
         // We are not drawing, and we are trying to walk outside a path, we can't do that
         myPlayer.X = previousX;
@@ -107,6 +105,14 @@
         haveJustDied = false;
       }
     };
+
+    // Resets the path and go back to last path known
+    function respawn(){
+      // Transform all temporal paths into filled
+      replaceValuesInMap('T','F');
+      myPlayer.X = lastPathX;
+      myPlayer.Y = lastPathY;
+    }
 
     myPlayer.render = function(canvasContext){  
       
@@ -126,12 +132,13 @@
     myPlayer.checkCollision = function(badguyHitbox, tFrame){
       if (haveJustDied || !areCollisioning(myPlayer.getHitbox(), badguyHitbox)) return false;
 
-      --lifes;
+      // We got hit!
+      --myPlayer.lifes;
       haveJustDied = true;
       dieTime = tFrame;
+      respawn();
 
-      console.log("player hit. Remaining lifes: ", lifes, tFrame);
-
+      console.log("player hit. Remaining myPlayer.lifes: ", myPlayer.lifes, tFrame);
       return true;      
     };
     
@@ -145,25 +152,14 @@
         
     function getMapCoordinate(x,y){
       return map[y * canvasW + x];
-    }
-
-    function renderToCanvas(width, height, render, canvas) {
-      canvas = canvas || createCanvas(width, height, canvas);
-      render(canvas.getContext('2d'));
-      return canvas;
-    }
+    }    
 
     function createCanvas(width, height) {
       var canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
-      
-      // TODO: Comment this, it's just for debugging
-      canvas.globalAlpha = 1;
-      document.body.appendChild(canvas);  
-      var ctx = canvas.getContext('2d')
-      ctx.fillStyle = "blue";
-      ctx.fillRect(0, 0, canvasW, canvasH);
+            
+      //document.body.appendChild(canvas);  
       
       return canvas;
     }

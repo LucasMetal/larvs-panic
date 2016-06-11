@@ -1,16 +1,21 @@
 (function(LP) {
 
-	console.log("init!");
-
 	var c2d,
 		canvasH,
 		canvasW,
 		actors = new Array(),
-		meter;
+		meter,
+		statsElement,
+		lastStatsUpdateTime = 0,
+		clearedPercentage = 0,
+		remainingTime = 30;
 
 	// This method is initially called by onLoad event on index
-	LP.init = function(canvasId){
+	LP.init = function(canvasId, statsElementId, fpsMeterId){
 
+		console.log("init!");
+
+		statsElement = document.getElementById(statsElementId);
 		initializeCanvas(canvasId);
 
 		player = LP.player(10,10, canvasW, canvasH);
@@ -20,7 +25,7 @@
 		
 		LP.initInput();
 
-		meter = new FPSMeter();
+		meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
 
 		main();
 	};
@@ -43,6 +48,7 @@
 	};
 
 	function update(tFrame){
+		updateStats(tFrame);
 
 		for (var i = actors.length - 1; i >= 0; i--) {
 			actors[i].update(tFrame, LP.getInput());
@@ -65,6 +71,13 @@
 		// TODO: Render an image
       	c2d.fillStyle = "red";
       	c2d.fillRect(0, 0, canvasW, canvasH);
+	}
+
+	function updateStats(tFrame){
+		if (tFrame - lastStatsUpdateTime > 1000){
+			statsElement.innerText = 'Lifes: ' + player.lifes + ' | Points: ' + player.points + ' | ' + clearedPercentage + '% | Time: ' + remainingTime; 
+			lastStatsUpdateTime = tFrame;
+		}
 	}
 
 }(this.LP = this.LP || {}));
