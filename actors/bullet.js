@@ -1,44 +1,34 @@
 (function(LP) {
 
-  LP.circleEnemy = function (x,y, canvasW, canvasH, player) {
-    var myEnemy = {},
+  LP.bullet = function (x,y, directionX, directionY, canvasW, canvasH, player) {
+    var myBullet = {
+          alive : true
+        },
         speed = 1,
         X = x,
         Y = y,
         canvasW = canvasW,
         canvasH = canvasH,
-        isFiring = false,
-        radius = 10,
+        radius = 2,
         previousX = x,
         previousY = y,
-        directionX = 1,
-        directionY = 0,
-        bullets = [],
+        directionX = directionX,
+        directionY = directionY,
         player = player;
 
-    myEnemy.update = function(tFrame){
+    myBullet.update = function(tFrame, input){
       
+      if (!myBullet.alive) return;
+
       previousX = X;
       previousY = Y;
 
       X += speed * directionX;
+      Y += speed * directionY;
 
-      if (X <= 0 || X >= canvasW){
-        directionX *= -1;
-      }
-
-      // Fires a bullet when player is on same line or column
-      if (X === player.X) fireBullet ( 0, player.Y < Y ? -1 : 1 );
-      if (Y === player.Y) fireBullet ( player.X < X ? -1 : 1, 0 );
-
-      // Remove dead bullets and update live ones
-      for (var i = bullets.length - 1; i >= 0; i--) {
-        if (!bullets[i].alive){
-          bullets.splice(i,1);
-          continue;
-        } 
-
-        bullets[i].update(tFrame);
+      if (X <= 0 || X >= canvasW || Y <= 0 || Y >= canvasH){
+        myBullet.alive = false;
+        console.log('bullet died');
       }
 
 /*
@@ -118,25 +108,16 @@
       */
     };
 
-    myEnemy.render = function(canvasContext){
-
-      for (var i = bullets.length - 1; i >= 0; i--) {
-        bullets[i].render(canvasContext);
-      }
-
+    myBullet.render = function(canvasContext){
       canvasContext.beginPath();
       canvasContext.moveTo(X,Y);
       canvasContext.ellipse(X, Y, radius, radius, 0, 0, 2 * Math.PI);      
-      canvasContext.fillStyle = "grey";
+      canvasContext.fillStyle = "yellow";
       canvasContext.fill();
     };
     
     // Private functions
 
-    function fireBullet(xDirection, yDirection){      
-      console.log('firing bullet', xDirection, yDirection);
-      bullets.push(LP.bullet(X, Y, xDirection, yDirection, canvasW, canvasH, player))
-    }
 /*
     function replaceValuesInMap(oldVal, newVal){
       for (var i = map.length - 1; i >= 0; i--) {
@@ -182,6 +163,6 @@
 
     generateRandomClearedZone();
   */  
-    return myEnemy;
+    return myBullet;
   };
 }(this.LP = this.LP || {}));

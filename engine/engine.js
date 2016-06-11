@@ -13,9 +13,11 @@
 
 		initializeCanvas(canvasId);
 
-		actors.push (LP.circleEnemy(10,10, canvasW, canvasH));
-		actors.push (LP.player(10,10, canvasW, canvasH));
+		player = LP.player(10,10, canvasW, canvasH);
 
+		actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
+		actors.push (player);
+		
 		LP.initInput();
 
 		meter = new FPSMeter();
