@@ -59,14 +59,18 @@
           lastPathX = X;
         
           if (previousPoint !== 'P'){            
-            console.log("path close!", previousPoint);
+            console.log("path closed!", previousPoint);
             // Transform all temporal paths into final paths
             replaceValuesInMap('T','P');
 
             // We fill two zones, starting from the previous position 
             // TODO: Fix previous position selection
-            var zone1 = floodFill(map, canvasW, previousX, previousY - 1, 'F', '1');
-            var zone2 = floodFill(map, canvasW, previousX, previousY + 1, 'F', '2');
+            var zone1 =  floodFill(map, canvasW, previousX,     previousY - 1, 'F', '1');
+                zone1 += floodFill(map, canvasW, previousX - 1, previousY    , 'F', '1');
+                zone1 += floodFill(map, canvasW, previousX - 1, previousY - 1, 'F', '1');
+            var zone2 =  floodFill(map, canvasW, previousX,     previousY + 1, 'F', '2');
+                zone2 += floodFill(map, canvasW, previousX + 1, previousY    , 'F', '2');
+                zone2 += floodFill(map, canvasW, previousX + 1, previousY + 1, 'F', '2');
 
             // We choose the smallest zone, the other one gets reset to F
             replaceValuesInMap(zone1 < zone2 ? '1' : '2','E');
