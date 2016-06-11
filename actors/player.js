@@ -1,11 +1,12 @@
 (function(LP) {
 
   LP.player = function (x,y, canvasW, canvasH) {
-    var myPlayer = {},
+    var myPlayer = {
+          X : y,
+          Y : y,          
+        },
         lifes = 3,
         speed = 1,
-        X = x,
-        Y = y,
         canvasW = canvasW,
         canvasH = canvasH,
         isFiring = false,
@@ -17,46 +18,48 @@
         lastPathX = x,
         lastPathY = y;
 
+
+
     myPlayer.update = function(tFrame, input){
-      previousX = X;
-      previousY = Y;
+      previousX = myPlayer.X;
+      previousY = myPlayer.Y;
 
-      if (input.left && X > 0){
-        X = Math.max(0, X - speed); 
+      if (input.left && myPlayer.X > 0){
+        myPlayer.X = Math.max(0, myPlayer.X - speed); 
       }
 
-      if (input.right && ( X + width) < canvasW){
-        X = Math.min(canvasW - width, X + speed); 
+      if (input.right && ( myPlayer.X + width) < canvasW){
+        myPlayer.X = Math.min(canvasW - width, myPlayer.X + speed); 
       }
 
-      if (input.up && Y > 0){
-        Y = Math.max(0, Y - speed); 
+      if (input.up && myPlayer.Y > 0){
+        myPlayer.Y = Math.max(0, myPlayer.Y - speed); 
       }
 
-      if (input.down && (Y + height) < canvasH){
-        Y = Math.min(canvasH - height, Y + speed); 
+      if (input.down && (myPlayer.Y + height) < canvasH){
+        myPlayer.Y = Math.min(canvasH - height, myPlayer.Y + speed); 
       }
 
       isFiring = input.fire;
 
       var previousPoint = map[previousX + canvasW * previousY]; 
-      var currentPoint = map[X + canvasW * Y];
+      var currentPoint = map[myPlayer.X + canvasW * myPlayer.Y];
    
       // If it's firing we update the path, otherwise he can't move outside
       if (isFiring){
 
         // Nothing more to calculate
-        if (previousX === X && previousY === Y) return;
+        if (previousX === myPlayer.X && previousY === myPlayer.Y) return;
 
         if (currentPoint === 'T' || currentPoint === 'E'){
             // We have bit our own tail or the pixel was empty
             console.log("tail bit or empty pixel");
-            X = previousX;
-            Y = previousY;      
+            myPlayer.X = previousX;
+            myPlayer.Y = previousY;      
         } else if (currentPoint === 'P'){
 
-          lastPathY = Y;
-          lastPathX = X;
+          lastPathY = myPlayer.Y;
+          lastPathX = myPlayer.X;
         
           if (previousPoint !== 'P'){            
             console.log("path closed!", previousPoint);
@@ -80,22 +83,22 @@
         }
         else
         { // We are just drawing
-          map[X + canvasW * Y] = 'T';
+          map[myPlayer.X + canvasW * myPlayer.Y] = 'T';
         }
       } else if (currentPoint === 'P'){
         // We are just walking on a path
-        lastPathY = Y;
-        lastPathX = X;
+        lastPathY = myPlayer.Y;
+        lastPathX = myPlayer.X;
       } else if (previousPoint === 'T'){
         // We were drawing, but we stop without closing a path, just reset the path and go back to last path known
         // Transform all temporal paths into filled
         replaceValuesInMap('T','F');
-        X = lastPathX;
-        Y = lastPathY;
+        myPlayer.X = lastPathX;
+        myPlayer.Y = lastPathY;
       } else {
         // We are not drawing, and we are trying to walk outside a path, we can't do that
-        X = previousX;
-        Y = previousY;      
+        myPlayer.X = previousX;
+        myPlayer.Y = previousY;      
       }
     };
 
@@ -105,7 +108,7 @@
       canvasContext.drawImage(playerCanvas,0,0);
       
       canvasContext.fillStyle = isFiring ? "orange" : "black";
-      canvasContext.fillRect(X, Y, 10, 10);
+      canvasContext.fillRect(myPlayer.X, myPlayer.Y, 10, 10);
     };
     
     // Private functions
@@ -195,10 +198,10 @@
       map[ (centerY - 1) * canvasW + centerX - 1] = 'P';
 
       // Player starts at 12
-      X = centerX;
-      Y = centerY - 1;
-      lastPathX = X;
-      lastPathY = Y;
+      myPlayer.X = centerX;
+      myPlayer.Y = centerY - 1;
+      lastPathX = myPlayer.X;
+      lastPathY = myPlayer.Y;
     }
 
     function floodFill(mapData, mapWidth, startingX, startingY, oldVal, newVal){
