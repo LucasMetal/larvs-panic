@@ -14,8 +14,7 @@
         width = 10,
         height = 10,
         previousX = x,
-        previousY = y;
-        paths = new Array(),
+        previousY = y,
         lastPathX = x,
         lastPathY = y,
         haveJustDied = false,
@@ -109,35 +108,7 @@
         console.log("haveJustDied set to false");
         haveJustDied = false;
       }
-    };
-
-    // Resets the path and go back to last path known
-    function respawn(){
-      // Transform all temporal paths into filled
-      replaceValuesInMap('T','F');
-      myPlayer.X = lastPathX;
-      myPlayer.Y = lastPathY;
-    }
-
-    function addPointsByAreaCleared(percentageCleared){
-      var pointsMultiplier;
-
-      if (percentageCleared <= 1){
-        pointsMultiplier = 1;
-      } else if (percentageCleared <= 2){
-        pointsMultiplier = 3;
-      } else if (percentageCleared <= 10){
-        pointsMultiplier = 5;
-      } else if (percentageCleared <= 50){
-        pointsMultiplier = 10;
-      } else if (percentageCleared <= 70){
-        pointsMultiplier = 30;
-      } else {
-        pointsMultiplier = 50;
-      }
-
-      myPlayer.points += percentageCleared * pointsMultiplier;
-    }
+    };    
 
     myPlayer.render = function(canvasContext){  
       
@@ -169,6 +140,16 @@
       console.log("player hit. Remaining myPlayer.lifes: ", myPlayer.lifes, tFrame);
       return true;      
     };
+
+    myPlayer.reset = function(){
+      for (var i = map.length - 1; i >= 0; i--) {
+        map[i] = 'F';
+      }
+
+      myPlayer.lifes = 3;
+
+      generateRandomClearedZone();
+    }
     
     // Private functions
 
@@ -292,18 +273,42 @@
               rect1.height + rect1.y > rect2.y);
     }
 
+    // Resets the path and go back to last path known
+    function respawn(){
+      // Transform all temporal paths into filled
+      replaceValuesInMap('T','F');
+      myPlayer.X = lastPathX;
+      myPlayer.Y = lastPathY;
+    }
+
+    function addPointsByAreaCleared(percentageCleared){
+      var pointsMultiplier;
+
+      if (percentageCleared <= 1){
+        pointsMultiplier = 1;
+      } else if (percentageCleared <= 2){
+        pointsMultiplier = 3;
+      } else if (percentageCleared <= 10){
+        pointsMultiplier = 5;
+      } else if (percentageCleared <= 50){
+        pointsMultiplier = 10;
+      } else if (percentageCleared <= 70){
+        pointsMultiplier = 30;
+      } else {
+        pointsMultiplier = 50;
+      }
+
+      myPlayer.points += percentageCleared * pointsMultiplier;
+    }
+
     // Init code
 
     var playerCanvas = createCanvas(canvasW, canvasH);
     var ctxPlayer = playerCanvas.getContext('2d'),
         map = new Array(canvasW*canvasH);
     
-    for (var i = map.length - 1; i >= 0; i--) {
-      map[i] = 'F';
-    }
+    myPlayer.reset();
 
-    generateRandomClearedZone();
-    
     return myPlayer;
   };
 }(this.LP = this.LP || {}));

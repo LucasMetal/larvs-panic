@@ -22,9 +22,9 @@
 			statsElement = document.getElementById(statsElementId);
 			initializeCanvas(canvasId);			
 			LP.initInput();
+ 			player = LP.player(10,10, canvasW, canvasH);
 
 			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
-
 			resetLevel();
 
 			mainLoop();
@@ -59,9 +59,9 @@
 	
   		function resetLevel(){
   			actors = [];
-			player = LP.player(10,10, canvasW, canvasH);
+			player.reset();
 			clearedPercentage = 0;
-			
+
 			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
 			actors.push (player);
   		}
