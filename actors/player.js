@@ -202,11 +202,8 @@
     }
 
     function updatePlayerCanvasFromMap(){
-
-      // TODO: This two lines can be taken out, the data is always the same
       // TODO: Maybe also an ArrayBuffer to improve speed
       // https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
-      var imgData = ctxPlayer.getImageData(0,0, canvasW, canvasH);
       var data = imgData.data;
       
       for (var i = map.length - 1; i >= 0; i--) {
@@ -237,6 +234,7 @@
           
       ctxPlayer.putImageData(imgData,0,0);
     };
+
 
     function generateRandomClearedZone(){
       // We generate a random cleared zone of a random width and height between 2 and 15% of the canvas dimensions
@@ -420,9 +418,10 @@
 
     // Init code
 
-    var playerCanvas = createCanvas(canvasW, canvasH);
-    var ctxPlayer = playerCanvas.getContext('2d'),
-        map = new Array(canvasW*canvasH);
+    var playerCanvas = createCanvas(canvasW, canvasH),
+        ctxPlayer = playerCanvas.getContext('2d'),
+        map = new Array(canvasW*canvasH),
+        imgData = ctxPlayer.getImageData(0,0, canvasW, canvasH);        
 
     return myPlayer;
   };
