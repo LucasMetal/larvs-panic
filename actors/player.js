@@ -152,14 +152,13 @@
       // We got hit!
       --myPlayer.lifes;
 
-      if (myPlayer.lifes === 0) LP.engine.playerDied();
-
       haveJustDied = true;
       dieTime = tFrame;
       respawn();
 
       LP.engine.showMessage("Ouch!");
       console.log("player hit. Remaining myPlayer.lifes: ", myPlayer.lifes, tFrame);
+      if (myPlayer.lifes === 0) LP.engine.playerDied();
       return true;      
     };
 
@@ -169,7 +168,8 @@
       }
 
       myPlayer.lifes = 3;
-
+      haveJustDied = false;
+      
       generateRandomClearedZone();
     }
     
@@ -409,8 +409,6 @@
     var playerCanvas = createCanvas(canvasW, canvasH);
     var ctxPlayer = playerCanvas.getContext('2d'),
         map = new Array(canvasW*canvasH);
-    
-    myPlayer.reset();
 
     return myPlayer;
   };
