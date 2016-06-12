@@ -239,26 +239,40 @@
     };
 
     function generateRandomClearedZone(){
-      var centerY = canvasH/2, 
-          centerX = canvasW/2;
+      // We generate a random cleared zone of a random width and height between 2 and 15% of the canvas dimensions
+      var width  = Math.floor(canvasW * getRandomArbitrary(0.02, 0.15)),
+          height = Math.floor(canvasH * getRandomArbitrary(0.02, 0.15)),
+          x = getRandomInt(0, canvasW - width), 
+          y = getRandomInt(0, canvasH - height),
+          pixelsCleared = 0;
+      console.log("generateRandomClearedZone",x,y,width,height);
 
-      // For now just create an empty cell right in the center, and eight path cells around
-      // We do that in clockwise order starting at 12
-      map[ centerY * canvasW + centerX ] = 'E';
-      map[ (centerY - 1) * canvasW + centerX ] = 'P';
-      map[ (centerY - 1) * canvasW + centerX + 1] = 'P';
-      map[ centerY * canvasW + centerX + 1] = 'P';
-      map[ (centerY + 1) * canvasW + centerX + 1] = 'P';
-      map[ (centerY + 1) * canvasW + centerX ] = 'P';
-      map[ (centerY + 1) * canvasW + centerX - 1] = 'P';
-      map[ centerY * canvasW + centerX - 1] = 'P';
-      map[ (centerY - 1) * canvasW + centerX - 1] = 'P';
+      for (var xIndex = x; xIndex < x+width; xIndex++){ 
+        for (var yIndex = y; yIndex < y+height; yIndex++){
+          map[ yIndex * canvasW + xIndex ] = 'E';
+          ++pixelsCleared;
+        }
+      }
 
-      // Player starts at 12
-      myPlayer.X = centerX;
-      myPlayer.Y = centerY - 1;
+      strokeAreaEdges(map, canvasW, 'E', 'P')
+
+      myPlayer.X = x;
+      myPlayer.Y = y;
       lastPathX = myPlayer.X;
       lastPathY = myPlayer.Y;
+
+      LP.engine.areaCleared(Math.round(pixelsCleared/map.length*100));
+    }
+
+    // Returns a random number between min (inclusive) and max (exclusive)
+    function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    // Returns a random integer between min (included) and max (excluded)
+    // Using Math.round() will give you a non-uniform distribution!
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
     }
 
     function floodFill(mapData, mapWidth, startingX, startingY, oldVal, newVal){

@@ -72,8 +72,8 @@
 	
   		function resetLevel(){
   			actors = [];
-			player.reset();
 			clearedPercentage = 0;
+			player.reset();
 			remainingTime = 90;
 
 			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
@@ -123,7 +123,7 @@
 
 		function updateStats(tFrame){
 			if (tFrame - lastStatsUpdateTime > 1000){
-				statsElement.innerText = 'Lifes: ' + player.lifes + ' | Points: ' + player.points + ' | ' + clearedPercentage + '% | Time: ' + remainingTime; 
+				statsElement.innerText = 'Lifes: ' + player.lifes + ' | Points: ' + player.points + ' | Time: ' + remainingTime; 
 				lastStatsUpdateTime = tFrame;
 			}
 		}
