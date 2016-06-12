@@ -14,7 +14,8 @@
 			lastStatsUpdateTime = 0,
 			messageTimeoutHandle = null,
 			clearedPercentage = 0,
-			remainingTime = 30;
+			remainingTime = 30,
+			lastFrameTime = 0;
 	
 		// This method is initially called by onLoad event on index
 		myEngine.init = function(canvasId, statsElementId, fpsMeterId, messagesElementId){
@@ -53,7 +54,7 @@
 			messagesElement.innerText = message;
 			
 			if (messageTimeoutHandle) clearTimeout(messageTimeoutHandle);
-			messageTimeoutHandle = setTimeout(function(){messagesElement.innerText = ''}, 3000);		
+			messageTimeoutHandle = setTimeout(function(){messagesElement.innerText = ''}, 3 * 1000);
 		}
 
 		// Private functions
@@ -73,6 +74,7 @@
   			actors = [];
 			player.reset();
 			clearedPercentage = 0;
+			remainingTime = 30;
 
 			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
 			actors.push (player);
@@ -86,6 +88,15 @@
 
 		function update(tFrame){
 			updateStats(tFrame);
+
+			if (tFrame - lastFrameTime > 1000){
+				--remainingTime;				
+				lastFrameTime = tFrame;
+
+				if (remainingTime === 0){
+					myEngine.playerDied();
+				}
+			}
 
 			for (var i = actors.length - 1; i >= 0; i--) {
 				actors[i].update(tFrame, LP.getInput());
