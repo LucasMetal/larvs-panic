@@ -130,7 +130,9 @@
     };
 
     myPlayer.checkCollision = function(badguyHitbox, tFrame){
-      if (!isFiring || haveJustDied || !areCollisioning(myPlayer.getHitbox(), badguyHitbox)) return false;
+      if (!isFiring || haveJustDied || 
+          (!areCollisioning(myPlayer.getHitbox(), badguyHitbox) &&
+          !isCollisioningTemporalPath(badguyHitbox))) return false;
 
       // We got hit!
       --myPlayer.lifes;
@@ -276,6 +278,41 @@
               rect1.x + rect1.width > rect2.x &&
               rect1.y < rect2.y + rect2.height &&
               rect1.height + rect1.y > rect2.y);
+    }
+
+    function isCollisioningTemporalPath (badguyHitbox){
+
+      var points = getTemporalPathPoints(),
+          x1 = badguyHitbox.x,
+          x2 = badguyHitbox.x + badguyHitbox.width,
+          y1 = badguyHitbox.y,
+          y2 = badguyHitbox.y + badguyHitbox.height;
+
+      for (var i = points.length - 1; i >= 0; i--) {
+         if ((x1 <= points[i].x) && (points[i].x <= x2) && 
+             (y1 <= points[i].y) && (points[i].y <= y2)) {
+           return true;
+         }
+      }
+
+      return false;
+    }
+
+    function getTemporalPathPoints(){
+      var points = [];
+
+      if (!isFiring) return points;
+
+      for (var i = map.length - 1; i >= 0; i--) {
+        if (map[i] === 'T') {
+          var y = i / canvasW;
+          var x = i % canvasW;
+          points.push({x: x, y: y });
+        }
+      }
+
+      console.log(points);
+      return points;
     }
 
     // Resets the path and go back to last path known
