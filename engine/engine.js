@@ -14,8 +14,9 @@
 			lastStatsUpdateTime = 0,
 			messageTimeoutHandle = null,
 			clearedPercentage = 0,
-			remainingTime = 30,
-			lastFrameTime = 0;
+			remainingTime = 180,
+			lastFrameTime = 0,
+			backgroundImgElement;
 	
 		// This method is initially called by onLoad event on index
 		myEngine.init = function(canvasId, statsElementId, fpsMeterId, messagesElementId){
@@ -31,7 +32,10 @@
 			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
 			resetLevel();
 
-			mainLoop();
+			backgroundImgElement = new Image();
+			backgroundImgElement.onload = function(){mainLoop();};
+			//backgroundImgElement.src = "http://2.bp.blogspot.com/_wfgZeHnjCnc/SrpU5rgX8gI/AAAAAAAAAI4/ezQ3s5Zdbvk/s320/manga_6.jpg";
+			backgroundImgElement.src = "http://1.bp.blogspot.com/_iknPwq_7NbI/STqxoG4oRsI/AAAAAAAAACE/tUuNOFtDz3o/s320/naruto01xk6%5B1%5D.jpg";
 		};
 
 		myEngine.playerDied = function(){
@@ -74,7 +78,7 @@
   			actors = [];
 			clearedPercentage = 0;
 			player.reset();
-			remainingTime = 90;
+			remainingTime = 180;
 
 			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
 			actors.push (player);
@@ -116,9 +120,11 @@
 		}
 
 		function renderBackground() {
-			// TODO: Render an image
-	      	c2d.fillStyle = "red";
-	      	c2d.fillRect(0, 0, canvasW, canvasH);
+			c2d.drawImage(backgroundImgElement,0,0);
+
+			// Useful maybe for debug
+	      	//c2d.fillStyle = "red";
+	      	//c2d.fillRect(0, 0, canvasW, canvasH);
 		}
 
 		function updateStats(tFrame){
