@@ -74,7 +74,7 @@
   			actors = [];
 			player.reset();
 			clearedPercentage = 0;
-			remainingTime = 30;
+			remainingTime = 90;
 
 			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
 			actors.push (player);

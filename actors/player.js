@@ -22,8 +22,8 @@
 
     myPlayer.update = function(tFrame, input){
 
-      // If 10 seconds passed since we day, we are fully back in life now ;)
-      if (haveJustDied && (tFrame - dieTime > 10 * 1000)){
+      // If 5 seconds passed since we day, we are fully back in life now ;)
+      if (haveJustDied && (tFrame - dieTime > 5 * 1000)){
         console.log("haveJustDied set to false");
         haveJustDied = false;
       }
