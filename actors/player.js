@@ -71,16 +71,27 @@
           if (previousPoint !== 'P'){            
             console.log("path closed!", previousPoint);
             // Transform all temporal paths into final paths
-            var percentageCleared = replaceValuesInMap('T','P');
+            // TODO: Fix previous position selection: That's why we are transforming it to B, so we can revert it
+            var percentageCleared = replaceValuesInMap('T','B'); // last param should be P
 
             // We fill two zones, starting from the previous position 
-            // TODO: Fix previous position selection
             var zone1 =  floodFill(map, canvasW, previousX,     previousY - 1, 'F', '1');
                 zone1 += floodFill(map, canvasW, previousX - 1, previousY    , 'F', '1');
                 zone1 += floodFill(map, canvasW, previousX - 1, previousY - 1, 'F', '1');
             var zone2 =  floodFill(map, canvasW, previousX,     previousY + 1, 'F', '2');
                 zone2 += floodFill(map, canvasW, previousX + 1, previousY    , 'F', '2');
                 zone2 += floodFill(map, canvasW, previousX + 1, previousY + 1, 'F', '2');
+
+            // TODO: Fix previous position selection, this is a hack so the bug don't occur, but gameplay gets affected
+            if (zone1 === 0 || zone2 === 0){
+              replaceValuesInMap('1','F'); // Back to T, so respawn removes it
+              replaceValuesInMap('2','F'); // Back to T, so respawn removes it
+              replaceValuesInMap('B','T'); // Back to T, so respawn removes it
+              respawn();
+              LP.engine.showMessage("Sorry, I should fix that bug!");
+              return;
+            }
+            replaceValuesInMap('B','P');
 
             // We choose the smallest zone, the other one gets reset to F
             percentageCleared += replaceValuesInMap(zone1 < zone2 ? '1' : '2','E');
