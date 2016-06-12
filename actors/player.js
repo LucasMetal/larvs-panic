@@ -21,6 +21,13 @@
         dieTime = null;
 
     myPlayer.update = function(tFrame, input){
+
+      // If 10 seconds passed since we day, we are fully back in life now ;)
+      if (haveJustDied && (tFrame - dieTime > 10 * 1000)){
+        console.log("haveJustDied set to false");
+        haveJustDied = false;
+      }
+      
       previousX = myPlayer.X;
       previousY = myPlayer.Y;
 
@@ -103,11 +110,8 @@
         myPlayer.Y = previousY;      
       }
 
-      // If 10 seconds passed since we day, we are fully back in life now ;)
-      if (haveJustDied && (tFrame - dieTime > 10 * 1000)){
-        console.log("haveJustDied set to false");
-        haveJustDied = false;
-      }
+      // Don't put anything here, it won't execute if firing without moving
+
     };    
 
     myPlayer.render = function(canvasContext){  
