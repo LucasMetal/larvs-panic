@@ -27,7 +27,7 @@
         console.log("haveJustDied set to false");
         haveJustDied = false;
       }
-      
+
       previousX = myPlayer.X;
       previousY = myPlayer.Y;
 
@@ -126,7 +126,7 @@
     };
 
     myPlayer.getHitbox = function(){
-      return {x: myPlayer.X, y: myPlayer.Y, width: width, height: height};
+      return {x: myPlayer.X - width/2, y: myPlayer.Y - width/2, width: width, height: height};
     };
 
     myPlayer.checkCollision = function(badguyHitbox, tFrame){

@@ -140,7 +140,7 @@
     };
 
     myEnemy.getHitbox = function(){
-      return {x: X, y: Y, width: radius, height: radius};
+      return {x: X - radius, y: Y - radius, width: radius*2, height: radius*2};
     };
     
     // Private functions
