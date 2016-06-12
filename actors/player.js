@@ -86,9 +86,13 @@
             percentageCleared += replaceValuesInMap(zone1 < zone2 ? '1' : '2','E');
             replaceValuesInMap(zone1 < zone2 ? '2' : '1','F');
 
-            percentageCleared = Math.round(percentageCleared/map.length * 100);
+            // We replace all the paths with E, and then stroke the borders of all E area with P
+            // this is for removing the path that was left enclosed in E area when the path was closed
+            replaceValuesInMap('P','E');
+            strokeAreaEdges(map, canvasW, 'E', 'P');
 
             // Handle points and notify engine
+            percentageCleared = Math.round(percentageCleared/map.length * 100);
             addPointsByAreaCleared(percentageCleared);
             LP.engine.areaCleared(percentageCleared);
           }
@@ -270,6 +274,52 @@
 
       console.log("Pixels filled", pixelsFilled);
       return pixelsFilled;
+    }    
+
+    function strokeAreaEdges(mapData, mapWidth, innerVal, borderVal){
+      var x = 0,
+          y = 0,
+          left = undefined,
+          top = undefined,
+          right = undefined,
+          bottom = undefined,
+          topLeft = undefined,
+          topRight = undefined,
+          bottomLeft = undefined,
+          bottomRight = undefined,
+          pixelStack = [],
+          mapHeight = mapData.length / mapWidth;
+
+      for(y=0;y<mapHeight;y++){
+        for(x=0;x<mapWidth;x++){
+          index = (x + y * mapWidth);
+          pixel = mapData[index];
+
+          // We want to detect edges from the area with innerVal to the outside
+          if (pixel !== innerVal) continue;
+
+          // Get the values of the eight surrounding pixels      
+          left = mapData[index-1];
+          right = mapData[index+1];
+          top = mapData[index - mapWidth];
+          bottom = mapData[index + mapWidth];
+          topLeft = mapData[index - mapWidth - 1];
+          topRight = mapData[index - mapWidth + 1];
+          bottomLeft = mapData[index + mapWidth - 1];
+          bottomRight = mapData[index + mapWidth + 1];
+
+          //Compare it all and save pixels to modify later, if we change them now, algorithm will get screwed
+          if(pixel !== left || pixel !== right || pixel !== top || pixel !== bottom || 
+             pixel !== topLeft || pixel !== topRight || pixel !== bottomLeft || pixel !== bottomRight){
+              pixelStack.push(index);
+          }   
+        }
+      }
+
+      // We finally stroke (paint) the borders
+      for (var i = pixelStack.length - 1; i >= 0; i--) {
+        mapData[pixelStack[i]] = borderVal;
+      }
     }
 
     function areCollisioning(rect1, rect2){
@@ -311,7 +361,7 @@
         }
       }
 
-      console.log(points);
+      //console.log(points);
       return points;
     }
 
