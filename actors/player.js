@@ -4,7 +4,7 @@
     var myPlayer = {
           X : y,
           Y : y,          
-          lifes : 3,
+          lives : 3,
           points : 0
         },
         speed = 1,
@@ -150,15 +150,15 @@
           !isCollisioningTemporalPath(badguyHitbox))) return false;
 
       // We got hit!
-      --myPlayer.lifes;
+      --myPlayer.lives;
 
       haveJustDied = true;
       dieTime = tFrame;
       respawn();
 
       LP.engine.showMessage("Ouch!");
-      console.log("player hit. Remaining myPlayer.lifes: ", myPlayer.lifes, tFrame);
-      if (myPlayer.lifes === 0) LP.engine.playerDied();
+      console.log("player hit. Remaining myPlayer.lives: ", myPlayer.lives, tFrame);
+      if (myPlayer.lives === 0) LP.engine.playerDied();
       return true;      
     };
 
@@ -167,7 +167,7 @@
         map[i] = 'F';
       }
 
-      myPlayer.lifes = 3;
+      myPlayer.lives = 3;
       haveJustDied = false;
       
       generateRandomClearedZone();

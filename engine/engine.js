@@ -129,7 +129,7 @@
 
 		function updateStats(tFrame){
 			if (tFrame - lastStatsUpdateTime > 1000){
-				statsElement.innerText = 'Lifes: ' + player.lifes + ' | Points: ' + player.points + ' | ' + clearedPercentage + '% | Time: ' + remainingTime; 
+				statsElement.innerText = 'Lives: ' + player.lives + ' | Points: ' + player.points + ' | ' + clearedPercentage + '% | Time: ' + remainingTime; 
 				lastStatsUpdateTime = tFrame;
 			}
 		}
