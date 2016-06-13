@@ -82,6 +82,8 @@
 			remainingTime = 180;
 
 			actors.push (LP.circleEnemy(10,25, canvasW, canvasH, player));
+			actors.push (LP.circleBumper(10,25, canvasW, canvasH, player));
+			actors.push (LP.circleBumper(canvasW - 10,25, canvasW, canvasH, player));
 			actors.push (player);
   		}
 
