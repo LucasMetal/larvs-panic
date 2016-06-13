@@ -17,7 +17,8 @@
 			remainingTime = 180,
 			lastFrameTime = 0,
 			lastRemaningTimeFrameTime = 0,
-			backgroundImgElement;
+			backgroundImgElement,
+			nextAddTimePercentage = 30;
 	
 		// This method is initially called by onLoad event on index
 		myEngine.init = function(canvasId, statsElementId, fpsMeterId, messagesElementId){
@@ -53,6 +54,13 @@
 				myEngine.showMessage("You win!");
 				resetLevel();
 			}
+
+			if (clearedPercentage >= nextAddTimePercentage){
+				remainingTime += 30;
+				nextAddTimePercentage += 30; // We add time each 30%
+				myEngine.showMessage("Extra time!");
+				console.log("Extra time added");
+			};
 		};
 
 		myEngine.showMessage = function (message){			
