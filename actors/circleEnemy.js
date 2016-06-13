@@ -8,7 +8,7 @@
         canvasW = canvasW,
         canvasH = canvasH,
         isFiring = false,
-        radius = 10,
+        radius = 20,
         previousX = x,
         previousY = y,
         directionX = 1,
@@ -150,7 +150,7 @@
     // Private functions
 
     function fireBullet(xDirection, yDirection, tFrame){
-      console.log('firing bullet', xDirection, yDirection);
+      //console.log('firing bullet', xDirection, yDirection);
       bullets.push(LP.bullet(X, Y, xDirection, yDirection, canvasW, canvasH, player))
       haveJustFired = true;
       lastFireTime = tFrame;

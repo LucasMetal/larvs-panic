@@ -16,6 +16,7 @@
 			clearedPercentage = 0,
 			remainingTime = 180,
 			lastFrameTime = 0,
+			lastRemaningTimeFrameTime = 0,
 			backgroundImgElement;
 	
 		// This method is initially called by onLoad event on index
@@ -80,7 +81,7 @@
 			player.reset();
 			remainingTime = 180;
 
-			actors.push (LP.circleEnemy(10,10, canvasW, canvasH, player));
+			actors.push (LP.circleEnemy(10,25, canvasW, canvasH, player));
 			actors.push (player);
   		}
 
@@ -93,9 +94,9 @@
 		function update(tFrame){
 			updateStats(tFrame);
 
-			if (tFrame - lastFrameTime > 1000){
+			if (tFrame - lastRemaningTimeFrameTime > 1000){
 				--remainingTime;				
-				lastFrameTime = tFrame;
+				lastRemaningTimeFrameTime = tFrame;
 
 				if (remainingTime === 0){
 					myEngine.playerDied();
@@ -103,9 +104,10 @@
 			}
 
 			for (var i = actors.length - 1; i >= 0; i--) {
-				actors[i].update(tFrame);
+				actors[i].update(tFrame, tFrame - lastFrameTime);
 			}
 			//console.log("update!!");
+			lastFrameTime = tFrame;
 		}
 
 		function render(){

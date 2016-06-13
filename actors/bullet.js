@@ -33,7 +33,7 @@
 
       if (X <= 0 || X >= canvasW || Y <= 0 || Y >= canvasH){
         myBullet.alive = false;
-        console.log('bullet died');
+        //console.log('bullet died');
       }
 
 /*
