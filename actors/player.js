@@ -1,6 +1,6 @@
 (function(LP) {
 
-  LP.player = function (x,y, canvasW, canvasH) {
+  LP.player = function (x,y, canvasW, canvasH, input) {
     var myPlayer = {
           X : y,
           Y : y,          
@@ -18,7 +18,8 @@
         lastPathX = x,
         lastPathY = y,
         haveJustDied = false,
-        dieTime = null;
+        dieTime = null,
+        input = input;
 
     myPlayer.update = function(tFrame, input){
 

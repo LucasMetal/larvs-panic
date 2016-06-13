@@ -27,7 +27,7 @@
 			messagesElement = document.getElementById(messagesElementId);
 			initializeCanvas(canvasId);			
 			LP.initInput();
- 			player = LP.player(10,10, canvasW, canvasH);
+ 			player = LP.player(10,10, canvasW, canvasH, LP.getInput());
 
 			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
 			resetLevel();
@@ -103,7 +103,7 @@
 			}
 
 			for (var i = actors.length - 1; i >= 0; i--) {
-				actors[i].update(tFrame, LP.getInput());
+				actors[i].update(tFrame);
 			}
 			//console.log("update!!");
 		}
