@@ -21,7 +21,7 @@
         dieTime = null,
         input = input;
 
-    myPlayer.update = function(tFrame, input){
+    myPlayer.update = function(tFrame){
 
       // If 5 seconds passed since we day, we are fully back in life now ;)
       if (haveJustDied && (tFrame - dieTime > 5 * 1000)){
