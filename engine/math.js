@@ -14,6 +14,11 @@
 	      return Math.floor(Math.random() * (max - min)) + min;
 	    }
 
+	    // Precise method which guarantees result = b when t = 1.
+	    myMath.lerp = function(a, b, t) {
+  			return (1-t)*a + t*b;
+		};
+
 		return myMath;
 	}();
 

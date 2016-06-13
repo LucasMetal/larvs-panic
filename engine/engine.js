@@ -34,7 +34,7 @@
 			resetLevel();
 
 			backgroundImgElement = new Image();
-			backgroundImgElement.onload = function(){mainLoop();};
+			backgroundImgElement.onload = function(){mainLoop(0);};
 			//backgroundImgElement.src = "http://2.bp.blogspot.com/_wfgZeHnjCnc/SrpU5rgX8gI/AAAAAAAAAI4/ezQ3s5Zdbvk/s320/manga_6.jpg";
 			backgroundImgElement.src = "http://1.bp.blogspot.com/_iknPwq_7NbI/STqxoG4oRsI/AAAAAAAAACE/tUuNOFtDz3o/s320/naruto01xk6%5B1%5D.jpg";
 		};
@@ -81,7 +81,7 @@
 			player.reset();
 			remainingTime = 180;
 
-			actors.push (LP.circleEnemy(10,25, canvasW, canvasH, player));
+			actors.push (LP.circleEnemy(25,25, canvasW, canvasH, player));
 			actors.push (LP.circleBumper(10,25, canvasW, canvasH, player));
 			actors.push (LP.circleBumper(canvasW - 10,25, canvasW, canvasH, player));
 			actors.push (player);

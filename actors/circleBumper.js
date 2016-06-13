@@ -70,6 +70,7 @@
       var distance = Math.sqrt((dx*dx) + (dy*dy));
       //this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
 
+      // We normalize the vector
       directionX = (dx/distance);
       directionY = (dy/distance);
 
