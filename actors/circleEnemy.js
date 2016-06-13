@@ -29,15 +29,14 @@
       previousX = X;
       previousY = Y;
 
-      X += speed * directionX;
-
-      if (X <= 0 || X >= canvasW){
-        directionX *= -1;
-      }
-
-      // Fires a bullet when player is on same line or column
-      if (X === player.X) fireBullet ( 0, player.Y < Y ? -1 : 1 , tFrame);
-      if (Y === player.Y) fireBullet ( player.X < X ? -1 : 1, 0 , tFrame);
+      // Fires bullets when player is on same line or column
+      if (!haveJustFired && (X === player.X || Y === player.Y)){
+        for (var angle = 0; angle <= 360; angle += 360/18){
+          var bx = Math.sin(angle * Math.PI / 180);
+          var by = Math.cos(angle * Math.PI / 180);
+          fireBullet ( bx, by, tFrame);
+        }
+      } 
 
       // Remove dead bullets and update live ones
       for (var i = bullets.length - 1; i >= 0; i--) {
@@ -48,6 +47,11 @@
 
         bullets[i].update(tFrame);
       }
+
+      if (bullets.length === 0){
+        X += speed * directionX;
+        if (X <= 0 || X >= canvasW) directionX *= -1;
+      } 
 
 /*
       if (input.right && ( X + width) < canvasW){
@@ -146,8 +150,6 @@
     // Private functions
 
     function fireBullet(xDirection, yDirection, tFrame){
-      if (haveJustFired) return;
-
       console.log('firing bullet', xDirection, yDirection);
       bullets.push(LP.bullet(X, Y, xDirection, yDirection, canvasW, canvasH, player))
       haveJustFired = true;
