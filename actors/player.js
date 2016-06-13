@@ -21,7 +21,7 @@
         dieTime = null,
         input = input;
 
-    myPlayer.update = function(tFrame){
+    myPlayer.update = function(tFrame, dt){
 
       // If 5 seconds passed since we day, we are fully back in life now ;)
       if (haveJustDied && (tFrame - dieTime > 5 * 1000)){
@@ -147,7 +147,7 @@
 
     myPlayer.checkCollision = function(badguyHitbox, tFrame){
       if (!isFiring || haveJustDied || 
-          (!areCollisioning(myPlayer.getHitbox(), badguyHitbox) &&
+          (!LP.helpers.areColliding(myPlayer.getHitbox(), badguyHitbox) &&
           !isCollisioningTemporalPath(badguyHitbox))) return false;
 
       // We got hit!
@@ -239,10 +239,10 @@
 
     function generateRandomClearedZone(){
       // We generate a random cleared zone of a random width and height between 2 and 15% of the canvas dimensions
-      var width  = Math.floor(canvasW * getRandomArbitrary(0.02, 0.15)),
-          height = Math.floor(canvasH * getRandomArbitrary(0.02, 0.15)),
-          x = getRandomInt(0, canvasW - width), 
-          y = getRandomInt(0, canvasH - height),
+      var width  = Math.floor(canvasW * LP.math.getRandomArbitrary(0.02, 0.15)),
+          height = Math.floor(canvasH * LP.math.getRandomArbitrary(0.02, 0.15)),
+          x = LP.math.getRandomInt(0, canvasW - width), 
+          y = LP.math.getRandomInt(0, canvasH - height),
           pixelsCleared = 0;
       console.log("generateRandomClearedZone",x,y,width,height);
 
@@ -261,17 +261,6 @@
       lastPathY = myPlayer.Y;
 
       LP.engine.areaCleared(Math.round(pixelsCleared/map.length*100));
-    }
-
-    // Returns a random number between min (inclusive) and max (exclusive)
-    function getRandomArbitrary(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-
-    // Returns a random integer between min (included) and max (excluded)
-    // Using Math.round() will give you a non-uniform distribution!
-    function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min)) + min;
     }
 
     function floodFill(mapData, mapWidth, startingX, startingY, oldVal, newVal){
@@ -346,13 +335,7 @@
       }
     }
 
-    function areCollisioning(rect1, rect2){
-      //console.log("areCollisioning", rect1, rect2);
-      return (rect1.x < rect2.x + rect2.width &&
-              rect1.x + rect1.width > rect2.x &&
-              rect1.y < rect2.y + rect2.height &&
-              rect1.height + rect1.y > rect2.y);
-    }
+    
 
     function isCollisioningTemporalPath (badguyHitbox){
 
