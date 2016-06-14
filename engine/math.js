@@ -14,6 +14,14 @@
 	      return Math.floor(Math.random() * (max - min)) + min;
 	    }
 
+		myMath.getRandomChoice = function(choices) {
+		    return choices[myMath.getRandomInt(0, choices.length-1)];
+		};
+
+  		myMath.getRandomBool = function() {
+    		return myMath.getRandomChoice([true, false]);
+  		};
+
 	    // Precise method which guarantees result = b when t = 1.
 	    myMath.lerp = function(a, b, t) {
   			return (1-t)*a + t*b;

@@ -50,7 +50,7 @@
       if (X - radius <= 0 || X + radius >= canvasW) directionX *= -1; 
       if (Y - radius <= 0 || Y + radius >= canvasH) directionY *= -1; 
 
-      if (tFrame - lastDirectionChangeTime > (Math.random () * 5 + 4 ) * 1000){
+      if (tFrame - lastDirectionChangeTime > LP.math.getRandomInt(5,10) * 1000){
         directionY = Math.random ();
         directionX = Math.random ();
         //if (Math.random() > 0.5) directionX *= -1;
@@ -61,7 +61,7 @@
       X += speed * directionX;
       Y += speed * directionY;
 
-      if (tFrame - lastBehaviorChangeTime > 10 * 1000) changeBehaviour(seekAndBumpBehavior, tFrame);
+      if (tFrame - lastBehaviorChangeTime > LP.math.getRandomInt(15,20) * 1000) changeBehaviour(seekAndBumpBehavior, tFrame);
     }
 
     function seekAndBumpBehavior(tFrame, dt){
