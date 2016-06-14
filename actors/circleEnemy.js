@@ -29,6 +29,8 @@
       if (player.isCollidingPath(myEnemy.getHitbox())){
         directionX *= -1;
         directionY *= -1;
+        X = previousX;
+        Y = previousY;
       }
       
       previousX = X;
@@ -106,7 +108,7 @@
     function changeBehaviour(behaviorToSet, tFrame){
         behavior = behaviorToSet;
         lastBehaviorChangeTime = tFrame;
-        console.log("changed behavior to " + behaviorToSet.name, this);
+        console.log("changed behavior to " + behaviorToSet.name);
     }
 
     function wanderBehavior(tFrame, dt){

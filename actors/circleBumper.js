@@ -23,6 +23,8 @@
       if (player.isCollidingPath(myEnemy.getHitbox())){
         directionX *= -1;
         directionY *= -1;
+        X = previousX;
+        Y = previousY;
       }
       
       previousX = X;
