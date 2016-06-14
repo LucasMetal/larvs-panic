@@ -25,6 +25,11 @@
     myEnemy.update = function(tFrame, dt){
       
       player.checkCollision(myEnemy.getHitbox(), tFrame);
+
+      if (player.isCollidingPath(myEnemy.getHitbox())){
+        directionX *= -1;
+        directionY *= -1;
+      }
       
       previousX = X;
       previousY = Y;

@@ -11,6 +11,22 @@
 	              rect1.height + rect1.y > rect2.y);
 	    }
 
+        myHelpers.isCollidingPoints = function(rect, points){
+	      var x1 = rect.x,
+	          x2 = rect.x + rect.width,
+	          y1 = rect.y,
+	          y2 = rect.y + rect.height;
+
+	      for (var i = points.length - 1; i >= 0; i--) {
+	         if ((x1 <= points[i].x) && (points[i].x <= x2) && 
+	             (y1 <= points[i].y) && (points[i].y <= y2)) {
+	           return true;
+	         }
+	      }
+
+	      return false;
+	    }
+
 	    return myHelpers;
 	}();
 

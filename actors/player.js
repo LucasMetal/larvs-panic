@@ -148,7 +148,7 @@
     myPlayer.checkCollision = function(badguyHitbox, tFrame){
       if (!isFiring || haveJustDied || 
           (!LP.helpers.areColliding(myPlayer.getHitbox(), badguyHitbox) &&
-          !isCollisioningTemporalPath(badguyHitbox))) return false;
+          !isCollidingTemporalPath(badguyHitbox))) return false;
 
       // We got hit!
       --myPlayer.lives;
@@ -173,6 +173,10 @@
       
       generateRandomClearedZone();
     }
+
+    myPlayer.isCollidingPath = function(badguyHitbox){
+      return LP.helpers.isCollidingPoints(badguyHitbox, getMapPoints('P'));
+    };
     
     // Private functions
 
@@ -235,7 +239,6 @@
           
       ctxPlayer.putImageData(imgData,0,0);
     };
-
 
     function generateRandomClearedZone(){
       // We generate a random cleared zone of a random width and height between 2 and 15% of the canvas dimensions
@@ -333,35 +336,17 @@
       for (var i = pixelStack.length - 1; i >= 0; i--) {
         mapData[pixelStack[i]] = borderVal;
       }
+    }    
+
+    function isCollidingTemporalPath (badguyHitbox){
+      return isFiring ? LP.helpers.isCollidingPoints(badguyHitbox, getMapPoints('T')) : false;
     }
 
-    
-
-    function isCollisioningTemporalPath (badguyHitbox){
-
-      var points = getTemporalPathPoints(),
-          x1 = badguyHitbox.x,
-          x2 = badguyHitbox.x + badguyHitbox.width,
-          y1 = badguyHitbox.y,
-          y2 = badguyHitbox.y + badguyHitbox.height;
-
-      for (var i = points.length - 1; i >= 0; i--) {
-         if ((x1 <= points[i].x) && (points[i].x <= x2) && 
-             (y1 <= points[i].y) && (points[i].y <= y2)) {
-           return true;
-         }
-      }
-
-      return false;
-    }
-
-    function getTemporalPathPoints(){
+    function getMapPoints(type){
       var points = [];
 
-      if (!isFiring) return points;
-
       for (var i = map.length - 1; i >= 0; i--) {
-        if (map[i] === 'T') {
+        if (map[i] === type) {
           var y = i / canvasW;
           var x = i % canvasW;
           points.push({x: x, y: y });
