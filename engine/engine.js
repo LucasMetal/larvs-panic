@@ -110,6 +110,8 @@
 
 				if (remainingTime === 0){
 					myEngine.playerDied();
+				} else if (remainingTime === 30){
+					myEngine.showMessage("Hurry up!!");
 				}
 			}
 

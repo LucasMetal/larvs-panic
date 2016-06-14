@@ -26,11 +26,11 @@
         X = previousX;
         Y = previousY;
       }
-      
+
       previousX = X;
       previousY = Y;
 
-      behavior(tFrame, dt);     
+      behavior(tFrame, dt);
     };
 
     myEnemy.render = function(canvasContext){
