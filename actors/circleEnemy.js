@@ -5,7 +5,8 @@
           X : 0,
           Y : 0,      
           directionX : 1,
-          directionY : 0
+          directionY : 0,
+          alive : true
         },
         speed = 1,
         canvasW = canvasW,

@@ -83,7 +83,7 @@
                 zone2 += floodFill(map, canvasW, previousX + 1, previousY    , 'F', '2');
                 zone2 += floodFill(map, canvasW, previousX + 1, previousY + 1, 'F', '2');
 
-            // TODO: Fix previous position selection, this is a hack so the bug don't occur, but gameplay gets affected
+            // TODO: Fix previous position selection, this is a hack so the bug doesn't occur, but gameplay gets affected
             if (zone1 === 0 || zone2 === 0){
               replaceValuesInMap('1','F'); // Back to T, so respawn removes it
               replaceValuesInMap('2','F'); // Back to T, so respawn removes it
@@ -181,6 +181,10 @@
     myPlayer.getFilledMapPoints = function(){
       return getMapPoints('F');
     };
+
+    myPlayer.getEmptyMapPoints = function(){
+      return getMapPoints('E');
+    };
     
     // Private functions
 
@@ -194,11 +198,7 @@
       }
 
       return replacedCount;
-    }
-        
-    function getMapCoordinate(x,y){
-      return map[y * canvasW + x];
-    }    
+    }        
 
     function createCanvas(width, height) {
       var canvas = document.createElement('canvas');

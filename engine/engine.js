@@ -7,7 +7,7 @@
 			canvasH,
 			canvasW,
 			player,
-			actors,
+			enemies,
 			meter,
 			statsElement,
 			messagesElement,
@@ -61,6 +61,8 @@
 				myEngine.showMessage("Extra time!");
 				console.log("Extra time added");
 			};
+
+			verifyEnclosedEnemies();
 		};
 
 		myEngine.showMessage = function (message){			
@@ -84,15 +86,14 @@
   		}
 	
   		function resetLevel(){
-  			actors = [];
+  			enemies = [];
 			clearedPercentage = 0;
 			player.reset();
 			remainingTime = 180;
 
-			actors.push (LP.circleEnemy (canvasW, canvasH, player));
-			actors.push (LP.circleBumper(canvasW, canvasH, player));
-			actors.push (LP.circleBumper(canvasW, canvasH, player));
-			actors.push (player);
+			//enemies.push (LP.circleEnemy (canvasW, canvasH, player));
+			enemies.push (LP.circleBumper(canvasW, canvasH, player));
+			enemies.push (LP.circleBumper(canvasW, canvasH, player));
   		}
 
 		function mainLoop (tFrame) {
@@ -115,9 +116,12 @@
 				}
 			}
 
-			for (var i = actors.length - 1; i >= 0; i--) {
-				actors[i].update(tFrame, tFrame - lastFrameTime);
+			for (var i = enemies.length - 1; i >= 0; i--) {
+				enemies[i].update(tFrame, tFrame - lastFrameTime);
 			}
+
+			player.update(tFrame, tFrame - lastFrameTime);
+
 			//console.log("update!!");
 			lastFrameTime = tFrame;
 		}
@@ -126,9 +130,17 @@
 
 			renderBackground();
 
-			for (var i = actors.length - 1; i >= 0; i--) {
-				actors[i].render(c2d);
+			player.render(c2d);
+
+			for (var i = enemies.length - 1; i >= 0; i--) {
+				if (!enemies[i].alive){
+		          enemies.splice(i,1);
+		          continue;
+		        }
+
+				enemies[i].render(c2d);
 			}
+
 			//console.log("render!!");
 			meter.tick();
 		}
@@ -145,6 +157,16 @@
 			if (tFrame - lastStatsUpdateTime > 1000){
 				statsElement.innerText = 'Lives: ' + player.lives + ' | Points: ' + player.points + ' | ' + clearedPercentage + '% | Time: ' + remainingTime; 
 				lastStatsUpdateTime = tFrame;
+			}
+		}
+
+		function verifyEnclosedEnemies(){
+			var emptyPoints = player.getEmptyMapPoints();
+			for (var i = enemies.length - 1; i >= 0; i--) {
+				if (LP.helpers.isCollidingPoints(enemies[i].getHitbox(),emptyPoints)){
+					enemies[i].die();
+					player.points += 200;
+				}
 			}
 		}
 

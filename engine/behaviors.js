@@ -130,7 +130,35 @@
 
 				return myBehavior;
 			}
-		}		
+		},
+
+		die: {
+			create: function (enemy, player, canvasW, canvasH, speed, radius, changeCallback){
+				var myBehavior = {
+				        isDying : true,
+		                colorPercentage : 0
+					},
+					dead = false;
+
+				myBehavior.onEnterState = function(){};
+
+				myBehavior.update = function (tFrame, dt){
+					if (myBehavior.colorPercentage < 1){
+						myBehavior.colorPercentage += (dt/1000);
+						return;
+					}
+					else {
+						if (!dead && changeCallback) changeCallback();
+						dead = true;
+					}
+			    }
+
+				myBehavior.onExitState = function(){};				
+
+				return myBehavior;
+			}
+		}
+
 	};
 
 }(this.LP = this.LP || {}));
