@@ -58,7 +58,7 @@
 
 			if (clearedPercentage >= nextAddTimePercentage){
 				remainingTime += 30;
-				nextAddTimePercentage += 30; // We add time each 30%
+				nextAddTimePercentage += 10; // We add time each 10 now
 				myEngine.showMessage("Extra time!");
 				console.log("Extra time added");
 			};
