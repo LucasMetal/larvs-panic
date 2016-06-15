@@ -57,7 +57,11 @@
 			      enemy.X += speed * enemy.directionX;
 			      enemy.Y += speed * enemy.directionY;
 
-			      if (changeCallback && LP.helpers.areColliding(player.getHitbox(), enemy.getHitbox())) changeCallback();
+					// TODO: Fix getting stuck
+					// If we have a changeCallback defined and have collided the player or we are touching the path (we are getting stuck)
+					// we change behavior
+					if (changeCallback && (LP.helpers.areColliding(player.getHitbox(), enemy.getHitbox()) || 
+						player.isCollidingPath(enemy.getHitbox()))) changeCallback();
 			    };
 
 				myBehavior.onExitState = function(){};
