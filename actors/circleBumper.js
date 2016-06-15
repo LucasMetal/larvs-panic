@@ -44,10 +44,17 @@
     };
 
     myEnemy.render = function(canvasContext){
+
+      var fillStyle = "blue";
+      if (behavior.state.isDying){
+        var colorUnit = Math.floor(LP.math.lerp(255,0, behavior.state.colorPercentage));
+        fillStyle = 'rgb(' + colorUnit + ',' + colorUnit + ',' + colorUnit + ')';
+      }
+
       canvasContext.beginPath();
       canvasContext.moveTo(myEnemy.X,myEnemy.Y);
       canvasContext.ellipse(myEnemy.X, myEnemy.Y, radius, radius, 0, 0, 2 * Math.PI);      
-      canvasContext.fillStyle = behavior.state.isDying ? 'rgb(0,0,' + Math.floor(LP.math.lerp(255,0, behavior.state.colorPercentage)) + ')' : "blue";
+      canvasContext.fillStyle = fillStyle;
       canvasContext.fill();
     };
 

@@ -18,9 +18,11 @@
         behavior = stateful("wander", {
           wander : LP.behaviors.wander.create(myEnemy, player, canvasW, canvasH, speed, radius, function(){ behavior.transition("multiFire");}),
           multiFire : LP.behaviors.multiFire.create(myEnemy, player, canvasW, canvasH, speed, radius, function(){ behavior.transition("seekAndBump");}),
-          seekAndBump : LP.behaviors.seekAndBump.create(myEnemy, player, canvasW, canvasH, speed, radius, function(){ behavior.transition("wander");})          
-        });
-        //function(event, behaviorName){console.log("circleEnemy: " + event + + behaviorName);});
+          seekAndBump : LP.behaviors.seekAndBump.create(myEnemy, player, canvasW, canvasH, speed, radius, function(){ behavior.transition("wander");}),
+          die : LP.behaviors.die.create(myEnemy, player, canvasW, canvasH, speed, radius, function(){ myEnemy.alive = false})
+        }), 
+        //function(event, behaviorName){console.log("circleEnemy: " + event + " " + behaviorName);});
+        isDying = false;
       
     myEnemy.update = function(tFrame, dt){
       
@@ -47,15 +49,28 @@
         }
       }
 
+      var fillStyle = 'grey';
+      if (behavior.state.isDying){
+        var colorUnit = Math.floor(LP.math.lerp(255,0, behavior.state.colorPercentage));
+        fillStyle = 'rgb(' + colorUnit + ',' + colorUnit + ',' + colorUnit + ')';
+      } else if (behavior.state.isFiring){
+        fillStyle = 'rgb(' + Math.floor(LP.math.lerp(0,255, behavior.state.colorPercentage)) + ',0,0)';
+      }
+      
       canvasContext.beginPath();
       canvasContext.moveTo(myEnemy.X,myEnemy.Y);
       canvasContext.ellipse(myEnemy.X, myEnemy.Y, radius, radius, 0, 0, 2 * Math.PI);
-      canvasContext.fillStyle = behavior.state.isFiring ? 'rgb(' + Math.floor(LP.math.lerp(0,255, behavior.state.colorPercentage)) + ',0,0)' : "grey";
+      canvasContext.fillStyle = fillStyle;
       canvasContext.fill();
     };
 
     myEnemy.getHitbox = function(){
       return {x: myEnemy.X - radius, y: myEnemy.Y - radius, width: radius*2, height: radius*2};
+    };
+
+    myEnemy.die = function (){
+      console.log("circleEnemy died");
+      behavior.transition("die");
     };
     
     // Private functions

@@ -91,7 +91,7 @@
 			player.reset();
 			remainingTime = 180;
 
-			//enemies.push (LP.circleEnemy (canvasW, canvasH, player));
+			enemies.push (LP.circleEnemy (canvasW, canvasH, player));
 			enemies.push (LP.circleBumper(canvasW, canvasH, player));
 			enemies.push (LP.circleBumper(canvasW, canvasH, player));
   		}
