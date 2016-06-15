@@ -45,17 +45,18 @@
 				myBehavior.onEnterState = function(){};
 
 				myBehavior.update = function (tFrame, dt){
-			      var dx = player.X - enemy.X;
-			      var dy = player.Y - enemy.Y;
-			      var distance = Math.sqrt((dx*dx) + (dy*dy));
-			      //this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
 
-			      // We normalize the vector
-			      enemy.directionX = (dx/distance);
-			      enemy.directionY = (dy/distance);
+					var dx = player.X - enemy.X;
+					var dy = player.Y - enemy.Y;
+					var distance = Math.sqrt((dx*dx) + (dy*dy));
+					//this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
 
-			      enemy.X += speed * enemy.directionX;
-			      enemy.Y += speed * enemy.directionY;
+					// We normalize the vector
+					enemy.directionX = (dx/distance);
+					enemy.directionY = (dy/distance);
+
+					enemy.X += speed * enemy.directionX;
+					enemy.Y += speed * enemy.directionY;
 
 					// TODO: Fix getting stuck
 					// If we have a changeCallback defined and have collided the player or we are touching the path (we are getting stuck)
