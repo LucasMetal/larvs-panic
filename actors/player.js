@@ -19,7 +19,8 @@
         lastPathY = 0,
         haveJustDied = false,
         dieTime = null,
-        input = input;
+        input = input,
+        mapPointsCache = {};        
 
     myPlayer.update = function(tFrame, dt){
 
@@ -112,6 +113,7 @@
         else
         { // We are just drawing
           map[myPlayer.X + canvasW * myPlayer.Y] = 'T';
+          clearMapPointsCache();
         }
       } else if (currentPoint === 'P'){
         // We are just walking on a path
@@ -164,9 +166,7 @@
     };
 
     myPlayer.reset = function(){
-      for (var i = map.length - 1; i >= 0; i--) {
-        map[i] = 'F';
-      }
+      replaceValuesInMap(null, 'F')
 
       myPlayer.lives = 3;
       haveJustDied = false;
@@ -191,12 +191,13 @@
     function replaceValuesInMap(oldVal, newVal){
       var replacedCount = 0;
       for (var i = map.length - 1; i >= 0; i--) {
-        if (map[i] === oldVal){
+        if (!oldVal || map[i] === oldVal){
           map[i] = newVal;
           ++replacedCount;
         }          
       }
 
+      if (replacedCount > 0) clearMapPointsCache();
       return replacedCount;
     }        
 
@@ -292,6 +293,7 @@
         pixelStack.push({x: current.x,   y: current.y-1 }); //down
       }
 
+      clearMapPointsCache();
       console.log("Pixels filled", pixelsFilled);
       return pixelsFilled;
     }    
@@ -340,6 +342,7 @@
       for (var i = pixelStack.length - 1; i >= 0; i--) {
         mapData[pixelStack[i]] = borderVal;
       }
+      clearMapPointsCache();
     }    
 
     function isCollidingTemporalPath (badguyHitbox){
@@ -347,6 +350,8 @@
     }
 
     function getMapPoints(type){
+      if (mapPointsCache[type]) return mapPointsCache[type];
+
       var points = [];
 
       for (var i = map.length - 1; i >= 0; i--) {
@@ -358,6 +363,7 @@
       }
 
       //console.log(points);
+      mapPointsCache[type] = points;
       return points;
     }
 
@@ -387,6 +393,10 @@
       }
 
       myPlayer.points += percentageCleared * pointsMultiplier;
+    }
+
+    function clearMapPointsCache(){
+      mapPointsCache = {};
     }
 
     // Init code
