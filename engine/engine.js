@@ -37,7 +37,8 @@
 			backgroundImgElement = new Image();
 			backgroundImgElement.onload = function(){mainLoop(0);};
 			//backgroundImgElement.src = "http://2.bp.blogspot.com/_wfgZeHnjCnc/SrpU5rgX8gI/AAAAAAAAAI4/ezQ3s5Zdbvk/s320/manga_6.jpg";
-			backgroundImgElement.src = "http://1.bp.blogspot.com/_iknPwq_7NbI/STqxoG4oRsI/AAAAAAAAACE/tUuNOFtDz3o/s320/naruto01xk6%5B1%5D.jpg";
+			//backgroundImgElement.src = "http://1.bp.blogspot.com/_iknPwq_7NbI/STqxoG4oRsI/AAAAAAAAACE/tUuNOFtDz3o/s320/naruto01xk6%5B1%5D.jpg"; //320x240
+			backgroundImgElement.src = "http://lh3.ggpht.com/-2iOwRLn7L2o/R-AmdcBZ2EI/AAAAAAAAAOY/f2T1ClJMoBE/Manga-image-tres-belle-fille-01263.jpg"; //512x384
 		};
 
 		myEngine.playerDied = function(){
@@ -80,8 +81,11 @@
 			c2d.lineWidth = 1;
 			c2d.globalAlpha = 1;
 			c2d.globalCompositeOperation = 'source-over';
-			canvasW = canvas.width;
-			canvasH = canvas.height;
+			// We do a little trick here to double everything, we create a normal canvas but tell the game its dimension is half the real one
+			// then we scale everything to the double. That way we have bigger objects without changing the game logic.
+			canvasW = canvas.width/2;
+			canvasH = canvas.height/2;
+			c2d.scale(2,2);
 			console.log('canvas initialized');
   		}
 	
