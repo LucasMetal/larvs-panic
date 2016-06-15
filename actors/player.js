@@ -1,9 +1,9 @@
 (function(LP) {
 
-  LP.player = function (x,y, canvasW, canvasH, input) {
+  LP.player = function (canvasW, canvasH, input) {
     var myPlayer = {
-          X : y,
-          Y : y,          
+          X : 0,
+          Y : 0,          
           lives : 3,
           points : 0
         },
@@ -13,10 +13,10 @@
         isFiring = false,
         width = 10,
         height = 10,
-        previousX = x,
-        previousY = y,
-        lastPathX = x,
-        lastPathY = y,
+        previousX = 0,
+        previousY = 0,
+        lastPathX = 0,
+        lastPathY = 0,
         haveJustDied = false,
         dieTime = null,
         input = input;
@@ -176,6 +176,10 @@
 
     myPlayer.isCollidingPath = function(badguyHitbox){
       return LP.helpers.isCollidingPoints(badguyHitbox, getMapPoints('P'));
+    };
+
+    myPlayer.getFilledMapPoints = function(){
+      return getMapPoints('F');
     };
     
     // Private functions

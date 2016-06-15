@@ -29,7 +29,7 @@
 			messagesElement = document.getElementById(messagesElementId);
 			initializeCanvas(canvasId);			
 			LP.initInput();
- 			player = LP.player(10,10, canvasW, canvasH, LP.getInput());
+ 			player = LP.player(canvasW, canvasH, LP.getInput());
 
 			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
 			resetLevel();
@@ -89,9 +89,9 @@
 			player.reset();
 			remainingTime = 180;
 
-			actors.push (LP.circleEnemy(45,45, canvasW, canvasH, player));
-			actors.push (LP.circleBumper(25,25, canvasW, canvasH, player));
-			actors.push (LP.circleBumper(canvasW - 25,25, canvasW, canvasH, player));
+			actors.push (LP.circleEnemy (canvasW, canvasH, player));
+			actors.push (LP.circleBumper(canvasW, canvasH, player));
+			actors.push (LP.circleBumper(canvasW, canvasH, player));
 			actors.push (player);
   		}
 

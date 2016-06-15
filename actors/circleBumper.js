@@ -1,9 +1,9 @@
 (function(LP) {
 
-  LP.circleBumper = function (x,y, canvasW, canvasH, player) {
+  LP.circleBumper = function (canvasW, canvasH, player) {
     var myEnemy = {
-          X : x,
-          Y : y,      
+          X : 0,
+          Y : 0,      
           directionX : 1,
           directionY : 0
         },
@@ -11,13 +11,14 @@
         canvasW = canvasW,
         canvasH = canvasH,
         radius = 10,
-        previousX = x,
-        previousY = y,        
+        previousX = 0,
+        previousY = 0,        
         player = player,
         behavior = stateful("wander", {
           wander : LP.behaviors.wander.create(myEnemy, player, canvasW, canvasH, speed, radius, function(){ behavior.transition("seekAndBump");}),
           seekAndBump : LP.behaviors.seekAndBump.create(myEnemy, player, canvasW, canvasH, speed, radius, function(){ behavior.transition("wander");})
-        }, function(event, behaviorName){console.log("circleBumper: " + event + " " + behaviorName);});
+        }); 
+        //function(event, behaviorName){console.log("circleBumper: " + event + " " + behaviorName);});
 
     myEnemy.update = function(tFrame, dt){
       player.checkCollision(myEnemy.getHitbox(), tFrame);
@@ -50,6 +51,12 @@
     // Private functions   
 
     // Init code
+
+    var initialPoint = LP.math.getRandomChoice(player.getFilledMapPoints());
+    myEnemy.X = initialPoint.x;
+    myEnemy.Y = initialPoint.y;
+    previousX = myEnemy.X;
+    previousY = myEnemy.Y;
   
     return myEnemy;
   };
