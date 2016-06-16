@@ -76,16 +76,31 @@
             // TODO: Fix previous position selection: That's why we are transforming it to B, so we can revert it
             var percentageCleared = replaceValuesInMap('T','B'); // last param should be P
 
-            // We fill two zones, starting from the previous position 
-            var zone1 =  floodFill(map, canvasW, previousX,     previousY - 1, 'F', '1');
-                zone1 += floodFill(map, canvasW, previousX - 1, previousY    , 'F', '1');
-                zone1 += floodFill(map, canvasW, previousX - 1, previousY - 1, 'F', '1');
-            var zone2 =  floodFill(map, canvasW, previousX,     previousY + 1, 'F', '2');
-                zone2 += floodFill(map, canvasW, previousX + 1, previousY    , 'F', '2');
-                zone2 += floodFill(map, canvasW, previousX + 1, previousY + 1, 'F', '2');
+            // TODO: Add explanation!
+            var dx = (myPlayer.X - previousX) *-1;
+            var dy = (myPlayer.Y - previousY) *-1;            
+
+            // We fill two zones, starting from the previous position
+            var zone1 = 0;
+            for (var backSteps = 0; backSteps < 3; ++backSteps){              
+              zone1 += floodFill(map, canvasW, (previousX + dx * backSteps) - dy, (previousY + dy * backSteps) + dx, 'F', '1');
+            }
+
+            var zone2 = 0;
+            for (var backSteps = 0; backSteps < 3; ++backSteps){              
+              zone2 += floodFill(map, canvasW, (previousX + dx * backSteps) + dy, (previousY + dy * backSteps) - dx, 'F', '2');
+            }          
 
             // TODO: Fix previous position selection, this is a hack so the bug doesn't occur, but gameplay gets affected
             if (zone1 === 0 || zone2 === 0){
+              
+              // Debug print
+              map[myPlayer.Y * canvasW + myPlayer.X] = 'X'
+              for (var i = 0; i < map.length; i += canvasW) {
+                console.log(map.slice(i, i+canvasW).join(""));
+              }
+              map[myPlayer.Y * canvasW + myPlayer.X] = 'P'
+
               replaceValuesInMap('1','F'); // Back to T, so respawn removes it
               replaceValuesInMap('2','F'); // Back to T, so respawn removes it
               replaceValuesInMap('B','T'); // Back to T, so respawn removes it
@@ -135,7 +150,7 @@
     myPlayer.render = function(canvasContext){  
       
       updatePlayerCanvasFromMap();
-      canvasContext.drawImage(playerCanvas,0,0);      
+      canvasContext.drawImage(playerCanvas,0,0);
       
       canvasContext.globalAlpha = haveJustDied ? 0.5 : 1;
       canvasContext.fillStyle = isFiring ? "orange" : "green";
