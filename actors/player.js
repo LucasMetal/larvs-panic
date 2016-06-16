@@ -73,28 +73,52 @@
           if (previousPoint !== 'P'){            
             console.log("path closed!", previousPoint);
             // Transform all temporal paths into final paths
+            // Bug Handling /////////////////////////////////////////////////////////
             // TODO: Fix previous position selection: That's why we are transforming it to B, so we can revert it
             var percentageCleared = replaceValuesInMap('T','B'); // last param should be P
+            // Bug Handling -END /////////////////////////////////////////////////////////
 
-            // TODO: Add explanation!
-            var dx = (myPlayer.X - previousX) *-1;
-            var dy = (myPlayer.Y - previousY) *-1;            
+            /*
+            Now we need to fill the enclosed area, but we can't distinguish between the enclosed and the outer one.
+            So we floodFill both of them, and assume the smallest was the enclosed one.
 
-            // We fill two zones, starting from the previous position
+            In order to flood both areas we need a starting point in each of them, to find them we must go back the temporal
+            path the user was drawing and look at each side of it, the first point at each side of the temporal will be our starting points.
+
+            To do all this, we are gonna find vectors (unit vectors), that applied to the point previous to contact (previousX, previousY)
+            will take us to the flood starting points.
+
+            Going back the temporal path means finding a vector with same direction as the path, but inverted. Then, finding the starting 
+            flood points at the sides means finding two vectors ortogonal to the first one (we are gona find one, and invert the direction).
+            */
+
+            // We find the unit vector that represents the player movement, and invert its direction, so we can use it to go back the path
+            var dx = (myPlayer.X - previousX) * -1;
+            var dy = (myPlayer.Y - previousY) * -1;
+
+            // To find an ortogonal vector to a given vector, the easiest way is to swap the coordinates of the given vector and invert
+            // one of them (not both), if you invert one of the them each time, you end up with two ortogonal vectors (that's what we do).
+            // Ie: v = (5,3), vo1 = (-3,5), vo2 = (3,-5), vo1 and vo2 are ortogonal to v.
+
+            // We fill two zones, for each one we are gonna do 3 tries (going back one more step each time).
+            // We start from the point previous to contact (previousX, previousY), apply the vector to go back (as many steps as required),
+            // and then apply the ortogonal vector to arrive at the flood starting point.
             var zone1 = 0;
-            for (var backSteps = 0; backSteps < 3; ++backSteps){              
+            for (var backSteps = 0; backSteps < 3; ++backSteps){
+              // (pX + backX * backSteps - ortogonalBackY, previousY + backY * steps + ortogonalBackX)
               zone1 += floodFill(map, canvasW, (previousX + dx * backSteps) - dy, (previousY + dy * backSteps) + dx, 'F', '1');
             }
 
             var zone2 = 0;
-            for (var backSteps = 0; backSteps < 3; ++backSteps){              
+            for (var backSteps = 0; backSteps < 3; ++backSteps){
+              // (pX + backX * backSteps + ortogonalBackY, previousY + backY * steps - ortogonalBackX)
               zone2 += floodFill(map, canvasW, (previousX + dx * backSteps) + dy, (previousY + dy * backSteps) - dx, 'F', '2');
             }          
 
+            // Bug Handling /////////////////////////////////////////////////////////
             // TODO: Fix previous position selection, this is a hack so the bug doesn't occur, but gameplay gets affected
             if (zone1 === 0 || zone2 === 0){
               
-              // Debug print
               map[myPlayer.Y * canvasW + myPlayer.X] = 'X'
               for (var i = 0; i < map.length; i += canvasW) {
                 console.log(map.slice(i, i+canvasW).join(""));
@@ -109,6 +133,7 @@
               return;
             }
             replaceValuesInMap('B','P');
+            // Bug Handling - END /////////////////////////////////////////////////////
 
             // We choose the smallest zone, the other one gets reset to F
             percentageCleared += replaceValuesInMap(zone1 < zone2 ? '1' : '2','E');
@@ -119,7 +144,7 @@
             replaceValuesInMap('P','E');
             strokeAreaEdges(map, canvasW, 'E', 'P');
 
-            // Handle points and notify engine
+            // Handle game points and notify engine
             percentageCleared = Math.round(percentageCleared/map.length * 100);
             addPointsByAreaCleared(percentageCleared);
             LP.engine.areaCleared(percentageCleared);
