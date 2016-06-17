@@ -1,162 +1,150 @@
 (function(LP) {
 
 	LP.behaviors = {
+
+		behavior : function(enemy, changeCallback){
+			var that = {};
+
+			that.onEnterState = function(){};
+			that.update = function(tFrame, dt){};
+			that.onExitState = function(){};
+			
+			return that;
+		},
 		
-		wander: {
-			create: function (enemy, player, canvasW, canvasH, speed, radius, changeCallback){
-				var myBehavior = {},
-			        lastDirectionChangeTime = 0,
-	                lastBehaviorChangeTime = 0;
+		wander: function (enemy, changeCallback){
+			var that = LP.behaviors.behavior(enemy, changeCallback),
+		        lastDirectionChangeTime = 0,
+                lastBehaviorChangeTime = 0;
 
-				myBehavior.onEnterState = function(){
-					lastBehaviorChangeTime = null;
-				};
+			that.onEnterState = function(){
+				lastBehaviorChangeTime = null;
+			};
 
-				myBehavior.update = function (tFrame, dt){
-					if (!lastBehaviorChangeTime) lastBehaviorChangeTime = tFrame;
+			that.update = function (tFrame, dt){
+				if (!lastBehaviorChangeTime) lastBehaviorChangeTime = tFrame;
 
-					if (enemy.x - radius <= 0 || enemy.x + radius >= canvasW) enemy.directionX *= -1; 
-					if (enemy.y - radius <= 0 || enemy.y + radius >= canvasH) enemy.directionY *= -1; 
+				if (enemy.x - enemy.radius <= 0 || enemy.x + enemy.radius >= enemy.canvasW) enemy.directionX *= -1; 
+				if (enemy.y - enemy.radius <= 0 || enemy.y + enemy.radius >= enemy.canvasH) enemy.directionY *= -1; 
 
-					if (tFrame - lastDirectionChangeTime > (Math.random () * 5 + 4 ) * 1000){
+				if (tFrame - lastDirectionChangeTime > (Math.random () * 5 + 4 ) * 1000){
 					enemy.directionY = Math.random ();
 					enemy.directionX = Math.random ();
 					//if (Math.random() > 0.5) directionX *= -1;
 					//if (Math.random() > 0.5) directionY *= -1;
 					lastDirectionChangeTime = tFrame;
-					}
+				}
 
-					enemy.x += speed * enemy.directionX;
-					enemy.y += speed * enemy.directionY;
+				//enemy.x += enemy.speed * enemy.directionX;
+				//enemy.y += enemy.speed * enemy.directionY;
 
-					if (changeCallback && (tFrame - lastBehaviorChangeTime > 10 * 1000)) changeCallback();
-			    };
+				if (changeCallback && (tFrame - lastBehaviorChangeTime > 10 * 1000)) changeCallback();
+		    };
 
-				myBehavior.onExitState = function(){};
-
-				return myBehavior;
-			}
+			return that;		
 		},
 
-		seekAndBump: {
-			create: function (enemy, player, canvasW, canvasH, speed, radius, changeCallback){
-				var myBehavior = {};
+		seekAndBump: function (enemy, changeCallback){
+			var that = LP.behaviors.behavior(enemy, changeCallback);
 
-				myBehavior.onEnterState = function(){};
+			that.update = function (tFrame, dt){
 
-				myBehavior.update = function (tFrame, dt){
+				var dx = enemy.player.X - enemy.x;
+				var dy = enemy.player.Y - enemy.y;
+				var distance = Math.sqrt((dx*dx) + (dy*dy));
+				//this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
 
-					var dx = player.X - enemy.x;
-					var dy = player.Y - enemy.y;
-					var distance = Math.sqrt((dx*dx) + (dy*dy));
-					//this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
+				// We normalize the vector
+				enemy.directionX = (dx/distance);
+				enemy.directionY = (dy/distance);
 
-					// We normalize the vector
-					enemy.directionX = (dx/distance);
-					enemy.directionY = (dy/distance);
+				enemy.x += enemy.speed * enemy.directionX;
+				enemy.y += enemy.speed * enemy.directionY;
 
-					enemy.x += speed * enemy.directionX;
-					enemy.y += speed * enemy.directionY;
+				// TODO: Fix getting stuck
+				// If we have a changeCallback defined and have collided the player or we are touching the path (we are getting stuck)
+				// we change behavior
+				if (changeCallback && (LP.helpers.areColliding(enemy.player.getHitbox(), enemy.getHitbox()) || 
+					enemy.player.isCollidingPath(enemy.getHitbox()))) changeCallback();
+		    };
 
-					// TODO: Fix getting stuck
-					// If we have a changeCallback defined and have collided the player or we are touching the path (we are getting stuck)
-					// we change behavior
-					if (changeCallback && (LP.helpers.areColliding(player.getHitbox(), enemy.getHitbox()) || 
-						player.isCollidingPath(enemy.getHitbox()))) changeCallback();
-			    };
-
-				myBehavior.onExitState = function(){};
-
-				return myBehavior;
-			}
+			return that;			
 		},
 
-		multiFire: {
-			create: function (enemy, player, canvasW, canvasH, speed, radius, changeCallback){
-				var myBehavior = {
-				        isFiring : false,
-		                colorPercentage : 0,
-	                    bullets : [],
-					},
-					haveJustFired = false;
+		multiFire: function (enemy, changeCallback){
+			var that = LP.behaviors.behavior(enemy, changeCallback);
+			that.isFiring = false;
+            that.colorPercentage = 0;
+			that.bullets = [];					
+			var haveJustFired = false;
 
-				myBehavior.onEnterState = function(){
-			        myBehavior.colorPercentage = 0;
-			        haveJustFired = false;
-			      	myBehavior.isFiring = true;			        
-				};
+			that.onEnterState = function(){
+		        that.colorPercentage = 0;
+		        haveJustFired = false;
+		      	that.isFiring = true;			        
+			};
 
-				myBehavior.update = function (tFrame, dt){
+			that.update = function (tFrame, dt){
 
-			      if (myBehavior.colorPercentage < 1){
-			        myBehavior.colorPercentage += (dt/2000);
-			        return;
-			      }
+		      if (that.colorPercentage < 1){
+		        that.colorPercentage += (dt/2000);
+		        return;
+		      }
 
-			      if (!haveJustFired){        
-			        for (var angle = 0; angle <= 360; angle += 360/18){
-			          // We find the coordinates of the normalized vector (legth = 1)
-			          var bx = Math.sin(angle * Math.PI / 180);
-			          var by = Math.cos(angle * Math.PI / 180);
-			          fireBullet ( bx, by, tFrame);
-			        } 
-			      }
+		      if (!haveJustFired){        
+		        for (var angle = 0; angle <= 360; angle += 360/18){
+		          // We find the coordinates of the normalized vector (legth = 1)
+		          var bx = Math.sin(angle * Math.PI / 180);
+		          var by = Math.cos(angle * Math.PI / 180);
+		          fireBullet ( bx, by, tFrame);
+		        } 
+		      }
 
-			      // Remove dead bullets and update live ones
-			      for (var i = myBehavior.bullets.length - 1; i >= 0; i--) {
-			        if (!myBehavior.bullets[i].alive){
-			          myBehavior.bullets.splice(i,1);
-			          continue;
-			        } 
+		      // Remove dead bullets and update live ones
+		      for (var i = that.bullets.length - 1; i >= 0; i--) {
+		        if (!that.bullets[i].alive){
+		          that.bullets.splice(i,1);
+		          continue;
+		        } 
 
-			        myBehavior.bullets[i].update(tFrame);
-			      }
+		        that.bullets[i].update(tFrame);
+		      }
 
-			      if (myBehavior.bullets.length === 0){
-			        myBehavior.isFiring = false;
-			        if (changeCallback) changeCallback();
-			      }
-			    }
+		      if (that.bullets.length === 0){
+		        that.isFiring = false;
+		        if (changeCallback) changeCallback();
+		      }
+		    }
 
-				myBehavior.onExitState = function(){};
+			// Private methods
 
-				// Private methods
+			function fireBullet(xDirection, yDirection, tFrame){
+		      //console.log('firing bullet', xDirection, yDirection);
+		      that.bullets.push(LP.bullet(enemy.x, enemy.y, xDirection, yDirection, enemy.canvasW, enemy.canvasH, enemy.player))
+		      haveJustFired = true;
+		    }
 
-				function fireBullet(xDirection, yDirection, tFrame){
-			      //console.log('firing bullet', xDirection, yDirection);
-			      myBehavior.bullets.push(LP.bullet(enemy.x, enemy.y, xDirection, yDirection, canvasW, canvasH, player))
-			      haveJustFired = true;
-			    }
-
-				return myBehavior;
-			}
+			return that;		
 		},
 
-		die: {
-			create: function (enemy, player, canvasW, canvasH, speed, radius, changeCallback){
-				var myBehavior = {
-				        isDying : true,
-		                colorPercentage : 0
-					},
-					dead = false;
+		die: function (enemy, changeCallback){
+			var that = LP.behaviors.behavior(enemy, changeCallback);
+			that.isDying = true;
+			that.colorPercentage = 0;
+			var dead = false;				
 
-				myBehavior.onEnterState = function(){};
+			that.update = function (tFrame, dt){
+				if (that.colorPercentage < 1){
+					that.colorPercentage += (dt/1000);
+					return;
+				}
+				else {
+					if (!dead && changeCallback) changeCallback();
+					dead = true;
+				}
+		    }			
 
-				myBehavior.update = function (tFrame, dt){
-					if (myBehavior.colorPercentage < 1){
-						myBehavior.colorPercentage += (dt/1000);
-						return;
-					}
-					else {
-						if (!dead && changeCallback) changeCallback();
-						dead = true;
-					}
-			    }
-
-				myBehavior.onExitState = function(){};				
-
-				return myBehavior;
-			}
+			return that;		
 		}
 
 	};

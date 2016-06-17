@@ -10,9 +10,9 @@
     var that = LP.enemy(options, my),
         superRender = that.superior("render");
     that.behavior = stateful("wander", {
-        wander : LP.behaviors.wander.create(that, that.player, that.canvasW, that.canvasH, that.speed, that.radius, function(){ that.behavior.transition("seekAndBump");}),
-        seekAndBump : LP.behaviors.seekAndBump.create(that, that.player, that.canvasW, that.canvasH, that.speed, that.radius, function(){ that.behavior.transition("wander");}),
-        die : LP.behaviors.die.create(that, that.player, that.canvasW, that.canvasH, that.speed, that.radius, function(){ that.die(); })
+        wander :      LP.behaviors.wander(      that, function(){ that.behavior.transition("seekAndBump");}),
+        seekAndBump : LP.behaviors.seekAndBump( that, function(){ that.behavior.transition("wander");}),
+        die :         LP.behaviors.die(         that, function(){ that.finishDying(); })
       }, that.logBehaviorChange);
 
     function render(canvasContext){

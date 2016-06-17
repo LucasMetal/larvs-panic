@@ -7,15 +7,15 @@
     var that = LP.gameObject (options, my);
     that.player = options.player;
     that.behavior = stateful("wander", {
-        wander : LP.behaviors.wander.create(that, that.player, that.canvasW, that.canvasH, that.speed, that.radius, function(){ that.behavior.transition("seekAndBump");}),          
-        seekAndBump : LP.behaviors.seekAndBump.create(that, that.player, that.canvasW, that.canvasH, that.speed, that.radius, function(){ that.behavior.transition("wander");}),
-        die : LP.behaviors.die.create(that, that.player, that.canvasW, that.canvasH, that.speed, that.radius, function(){ that.die(); })
-      }, logBehaviorChange);
+        wander :      LP.behaviors.wander(      that, function(){ that.behavior.transition("seekAndBump");}),          
+        seekAndBump : LP.behaviors.seekAndBump( that, function(){ that.behavior.transition("wander");}),
+        die :         LP.behaviors.die(         that, function(){ that.finishDying(); })
+      }, logBehaviorChange);    
     
     function update(tFrame, dt){
       if (!that.alive) return;
 
-      if (!that.behavior.isDying){          
+      if (!that.behavior.state.isDying){          
         that.player.checkCollision(that.getHitbox(), tFrame);
 
         if (that.player.isCollidingPath(that.getHitbox())){
@@ -35,6 +35,15 @@
       that.log(event + " " + behaviorName);
     }
 
+    function die(){
+      that.behavior.transition("die");
+    }
+
+    function finishDying(){
+      that.alive = false;
+      that.log("died");
+    }
+
     // Init code
 
     var initialPoint = LP.math.getRandomChoice(that.player.getFilledMapPoints());
@@ -45,6 +54,8 @@
 
     that.update = update;
     that.logBehaviorChange = logBehaviorChange;
+    that.die = die;
+    that.finishDying = finishDying;
 
     return that;
   };
