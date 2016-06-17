@@ -32,7 +32,7 @@
 
     function logBehaviorChange(event, behaviorName){
       if (event !== "state:enter") return;
-      that.log(event + " " + behaviorName);
+      //that.log(event + " " + behaviorName);
     }
 
     function die(){

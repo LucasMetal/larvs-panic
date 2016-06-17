@@ -29,7 +29,7 @@
 			messagesElement = document.getElementById(messagesElementId);
 			initializeCanvas(canvasId);			
 			LP.initInput();
- 			player = LP.player(canvasW, canvasH, LP.getInput());
+ 			player = LP.player({canvasW : canvasW, canvasH : canvasH, input: LP.getInput()});
 
 			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
 			resetLevel();

@@ -35,8 +35,9 @@
 					lastDirectionChangeTime = tFrame;
 				}
 
-				//enemy.x += enemy.speed * enemy.directionX;
-				//enemy.y += enemy.speed * enemy.directionY;
+				// return; // uncomment to freeze enemies
+				enemy.x += enemy.speed * enemy.directionX;
+				enemy.y += enemy.speed * enemy.directionY;
 
 				if (changeCallback && (tFrame - lastBehaviorChangeTime > 10 * 1000)) changeCallback();
 		    };
@@ -49,8 +50,8 @@
 
 			that.update = function (tFrame, dt){
 
-				var dx = enemy.player.X - enemy.x;
-				var dy = enemy.player.Y - enemy.y;
+				var dx = enemy.player.x - enemy.x;
+				var dy = enemy.player.y - enemy.y;
 				var distance = Math.sqrt((dx*dx) + (dy*dy));
 				//this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
 

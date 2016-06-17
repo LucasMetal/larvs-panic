@@ -1,77 +1,74 @@
 (function(LP) {
 
-  LP.player = function (canvasW, canvasH, input) {
-    var myPlayer = {
-          X : 0,
-          Y : 0,          
-          lives : 3,
-          points : 0
-        },
-        speed = 1,
-        canvasW = canvasW,
-        canvasH = canvasH,
-        isFiring = false,
-        width = 10,
-        height = 10,
-        previousX = 0,
-        previousY = 0,
-        lastPathX = 0,
+  LP.player = function (options, my) {
+    // We know the player is square, but we use radius to reuse all the code
+    options.radius = options.radius || 5;
+    
+    var my = my || {};
+    my.name = my.name || "player";
+
+    var that = LP.gameObject (options, my),
+        input = options.input;
+    that.lives = options.lives || 3;
+    that.points = 0;
+        
+    var lastPathX = 0,
         lastPathY = 0,
+        isFiring = false,
         haveJustDied = false,
-        dieTime = null,
-        input = input,
+        dieTime = null,        
         mapPointsCache = {};        
 
-    myPlayer.update = function(tFrame, dt){
+    function update(tFrame, dt){
 
       // If 5 seconds passed since we day, we are fully back in life now ;)
       if (haveJustDied && (tFrame - dieTime > 5 * 1000)){
-        console.log("haveJustDied set to false");
+        that.log("haveJustDied set to false");
         haveJustDied = false;
       }
 
-      previousX = myPlayer.X;
-      previousY = myPlayer.Y;
+      that.previousX = that.x;
+      that.previousY = that.y;
 
-      if (input.left && myPlayer.X > 0){
-        myPlayer.X = Math.max(0, myPlayer.X - speed); 
+      if (input.left && that.x > 0){
+        that.x = Math.max(0, that.x - that.speed); 
       }
 
-      if (input.right && myPlayer.X < canvasW){
-        myPlayer.X = Math.min(canvasW, myPlayer.X + speed); 
+      if (input.right && that.x < that.canvasW){
+        that.x = Math.min(that.canvasW, that.x + that.speed); 
       }
 
-      if (input.up && myPlayer.Y > 0){
-        myPlayer.Y = Math.max(0, myPlayer.Y - speed); 
+      if (input.up && that.y > 0){
+        that.y = Math.max(0, that.y - that.speed); 
       }
 
-      if (input.down && myPlayer.Y < canvasH){
-        myPlayer.Y = Math.min(canvasH, myPlayer.Y + speed); 
+      if (input.down && that.y < that.canvasH){
+        that.y = Math.min(that.canvasH, that.y + that.speed); 
       }
 
       isFiring = input.fire;
 
-      var previousPoint = map[previousX + canvasW * previousY]; 
-      var currentPoint = map[myPlayer.X + canvasW * myPlayer.Y];
+      var previousPoint = map[that.previousX + that.canvasW * that.previousY]; 
+      var currentPoint = map[that.x + that.canvasW * that.y];
    
       // If it's firing we update the path, otherwise he can't move outside
       if (isFiring){
 
         // Nothing more to calculate
-        if (previousX === myPlayer.X && previousY === myPlayer.Y) return;
+        if (that.previousX === that.x && that.previousY === that.y) return;
 
         if (currentPoint === 'T' || currentPoint === 'E'){
             // We have bit our own tail or the pixel was empty
-            console.log("tail bit or empty pixel");
-            myPlayer.X = previousX;
-            myPlayer.Y = previousY;      
+            //that.log("tail bit or empty pixel");
+            that.x = that.previousX;
+            that.y = that.previousY;
         } else if (currentPoint === 'P'){
 
-          lastPathY = myPlayer.Y;
-          lastPathX = myPlayer.X;
+          lastPathY = that.y;
+          lastPathX = that.x;
         
           if (previousPoint !== 'P'){            
-            console.log("path closed!", previousPoint);
+            that.log("path closed!", previousPoint);
             // Transform all temporal paths into final paths
             // Bug Handling /////////////////////////////////////////////////////////
             // TODO: Fix previous position selection: That's why we are transforming it to B, so we can revert it
@@ -85,7 +82,7 @@
             In order to flood both areas we need a starting point in each of them, to find them we must go back the temporal
             path the user was drawing and look at each side of it, the first point at each side of the temporal will be our starting points.
 
-            To do all this, we are gonna find vectors (unit vectors), that applied to the point previous to contact (previousX, previousY)
+            To do all this, we are gonna find vectors (unit vectors), that applied to the point previous to contact (that.previousX, that.previousY)
             will take us to the flood starting points.
 
             Going back the temporal path means finding a vector with same direction as the path, but inverted. Then, finding the starting 
@@ -93,37 +90,37 @@
             */
 
             // We find the unit vector that represents the player movement, and invert its direction, so we can use it to go back the path
-            var dx = (myPlayer.X - previousX) * -1;
-            var dy = (myPlayer.Y - previousY) * -1;
+            var dx = (that.x - that.previousX) * -1;
+            var dy = (that.y - that.previousY) * -1;
 
             // To find an ortogonal vector to a given vector, the easiest way is to swap the coordinates of the given vector and invert
             // one of them (not both), if you invert one of the them each time, you end up with two ortogonal vectors (that's what we do).
             // Ie: v = (5,3), vo1 = (-3,5), vo2 = (3,-5), vo1 and vo2 are ortogonal to v.
 
             // We fill two zones, for each one we are gonna do 3 tries (going back one more step each time).
-            // We start from the point previous to contact (previousX, previousY), apply the vector to go back (as many steps as required),
+            // We start from the point previous to contact (that.previousX, that.previousY), apply the vector to go back (as many steps as required),
             // and then apply the ortogonal vector to arrive at the flood starting point.
             var zone1 = 0;
             for (var backSteps = 0; backSteps < 3; ++backSteps){
-              // (pX + backX * backSteps - ortogonalBackY, previousY + backY * steps + ortogonalBackX)
-              zone1 += floodFill(map, canvasW, (previousX + dx * backSteps) - dy, (previousY + dy * backSteps) + dx, 'F', '1');
+              // (pX + backX * backSteps - ortogonalBackY, that.previousY + backY * steps + ortogonalBackX)
+              zone1 += floodFill(map, that.canvasW, (that.previousX + dx * backSteps) - dy, (that.previousY + dy * backSteps) + dx, 'F', '1');
             }
 
             var zone2 = 0;
             for (var backSteps = 0; backSteps < 3; ++backSteps){
-              // (pX + backX * backSteps + ortogonalBackY, previousY + backY * steps - ortogonalBackX)
-              zone2 += floodFill(map, canvasW, (previousX + dx * backSteps) + dy, (previousY + dy * backSteps) - dx, 'F', '2');
+              // (pX + backX * backSteps + ortogonalBackY, that.previousY + backY * steps - ortogonalBackX)
+              zone2 += floodFill(map, that.canvasW, (that.previousX + dx * backSteps) + dy, (that.previousY + dy * backSteps) - dx, 'F', '2');
             }          
 
             // Bug Handling /////////////////////////////////////////////////////////
             // TODO: Fix previous position selection, this is a hack so the bug doesn't occur, but gameplay gets affected
             if (zone1 === 0 || zone2 === 0){
               
-              map[myPlayer.Y * canvasW + myPlayer.X] = 'X'
-              for (var i = 0; i < map.length; i += canvasW) {
-                console.log(map.slice(i, i+canvasW).join(""));
+              map[that.y * that.canvasW + that.x] = 'X'
+              for (var i = 0; i < map.length; i += that.canvasW) {
+                that.log(map.slice(i, i+that.canvasW).join(""));
               }
-              map[myPlayer.Y * canvasW + myPlayer.X] = 'P'
+              map[that.y * that.canvasW + that.x] = 'P'
 
               replaceValuesInMap('1','F'); // Back to T, so respawn removes it
               replaceValuesInMap('2','F'); // Back to T, so respawn removes it
@@ -142,7 +139,7 @@
             // We replace all the paths with E, and then stroke the borders of all E area with P
             // this is for removing the path that was left enclosed in E area when the path was closed
             replaceValuesInMap('P','E');
-            strokeAreaEdges(map, canvasW, 'E', 'P');
+            strokeAreaEdges(map, that.canvasW, 'E', 'P');
 
             // Handle game points and notify engine
             percentageCleared = Math.round(percentageCleared/map.length * 100);
@@ -152,81 +149,73 @@
         }
         else
         { // We are just drawing
-          map[myPlayer.X + canvasW * myPlayer.Y] = 'T';
+          map[that.x + that.canvasW * that.y] = 'T';
           clearMapPointsCache();
         }
       } else if (currentPoint === 'P'){
         // We are just walking on a path
-        lastPathY = myPlayer.Y;
-        lastPathX = myPlayer.X;
+        lastPathY = that.y;
+        lastPathX = that.x;
       } else if (previousPoint === 'T'){
         // We were drawing, but we stop without closing a path, just respawn
         respawn();
       } else {
         // We are not drawing, and we are trying to walk outside a path, we can't do that
-        myPlayer.X = previousX;
-        myPlayer.Y = previousY;      
+        that.x = that.previousX;
+        that.y = that.previousY;      
       }
 
       // Don't put anything here, it won't execute if firing without moving
+    }
 
-    };    
-
-    myPlayer.render = function(canvasContext){  
-      
+    function render(canvasContext){
       updatePlayerCanvasFromMap();
       canvasContext.drawImage(playerCanvas,0,0);
       
       canvasContext.globalAlpha = haveJustDied ? 0.5 : 1;
       canvasContext.fillStyle = isFiring ? "orange" : "green";
-      canvasContext.fillRect(myPlayer.X - width/2, myPlayer.Y - height/2, width, height);
+      canvasContext.fillRect(that.x - that.radius, that.y - that.radius, that.radius*2, that.radius*2);
       canvasContext.globalAlpha = 1;
-    };
+    }
 
-    myPlayer.getHitbox = function(){
-      return {x: myPlayer.X - width/2, y: myPlayer.Y - width/2, width: width, height: height};
-    };
-
-    myPlayer.checkCollision = function(badguyHitbox, tFrame){
+    function checkCollision(badguyHitbox, tFrame){
       if (!isFiring || haveJustDied || 
-          (!LP.helpers.areColliding(myPlayer.getHitbox(), badguyHitbox) &&
+          (!LP.helpers.areColliding(that.getHitbox(), badguyHitbox) &&
           !isCollidingTemporalPath(badguyHitbox))) return false;
 
       // We got hit!
-      --myPlayer.lives;
+      --that.lives;
 
       haveJustDied = true;
       dieTime = tFrame;
       respawn();
 
       LP.engine.showMessage("Ouch!");
-      console.log("player hit. Remaining myPlayer.lives: ", myPlayer.lives, tFrame);
-      if (myPlayer.lives === 0) LP.engine.playerDied();
+      that.log("Hit! Remaining lives: ", that.lives, tFrame);
+      if (that.lives === 0) LP.engine.playerDied();
       return true;      
-    };
+    }
 
-    myPlayer.reset = function(){
+    function reset(){
       replaceValuesInMap(null, 'F')
 
-      myPlayer.lives = 3;
+      that.lives = 3;
       haveJustDied = false;
       
       generateRandomClearedZone();
     }
 
-    myPlayer.isCollidingPath = function(badguyHitbox){
+    function isCollidingPath(badguyHitbox){
       return LP.helpers.isCollidingPoints(badguyHitbox, getMapPoints('P'));
-    };
+    }
 
-    myPlayer.getFilledMapPoints = function(){
+    function getFilledMapPoints(){
       return getMapPoints('F');
-    };
+    }
 
-    myPlayer.getEmptyMapPoints = function(){
+    function getEmptyMapPoints(){
       return getMapPoints('E');
-    };
-    
-    // Private functions
+    }
 
     function replaceValuesInMap(oldVal, newVal){
       var replacedCount = 0;
@@ -252,7 +241,7 @@
     }
 
     function updatePlayerCanvasFromMap(){
-      // TODO: Maybe also an ArrayBuffer to improve speed
+      // TODO: Maybe also an ArrayBuffer to improve that.speed
       // https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
       var data = imgData.data;
       
@@ -287,26 +276,26 @@
 
     function generateRandomClearedZone(){
       // We generate a random cleared zone of a random width and height between 2 and 15% of the canvas dimensions
-      var width  = Math.floor(canvasW * LP.math.getRandomArbitrary(0.02, 0.15)),
-          height = Math.floor(canvasH * LP.math.getRandomArbitrary(0.02, 0.15)),
-          x = LP.math.getRandomInt(0, canvasW - width), 
-          y = LP.math.getRandomInt(0, canvasH - height),
+      var width  = Math.floor(that.canvasW * LP.math.getRandomArbitrary(0.02, 0.15)),
+          height = Math.floor(that.canvasH * LP.math.getRandomArbitrary(0.02, 0.15)),
+          x = LP.math.getRandomInt(0, that.canvasW - that.radius), 
+          y = LP.math.getRandomInt(0, that.canvasH - that.radius),
           pixelsCleared = 0;
-      console.log("generateRandomClearedZone",x,y,width,height);
+      that.log("generateRandomClearedZone",x,y,width,height);
 
       for (var xIndex = x; xIndex < x+width; xIndex++){ 
         for (var yIndex = y; yIndex < y+height; yIndex++){
-          map[ yIndex * canvasW + xIndex ] = 'E';
+          map[ yIndex * that.canvasW + xIndex ] = 'E';
           ++pixelsCleared;
         }
       }
 
-      strokeAreaEdges(map, canvasW, 'E', 'P')
+      strokeAreaEdges(map, that.canvasW, 'E', 'P')
 
-      myPlayer.X = x;
-      myPlayer.Y = y;
-      lastPathX = myPlayer.X;
-      lastPathY = myPlayer.Y;
+      that.x = x;
+      that.y = y;
+      lastPathX = that.x;
+      lastPathY = that.y;
 
       LP.engine.areaCleared(Math.round(pixelsCleared/map.length*100));
     }
@@ -334,7 +323,7 @@
       }
 
       clearMapPointsCache();
-      console.log("Pixels filled", pixelsFilled);
+      //that.log("Pixels filled", pixelsFilled);
       return pixelsFilled;
     }    
 
@@ -361,13 +350,13 @@
           if (pixel !== innerVal) continue;
 
           // Get the values of the eight surrounding pixels      
-          left = mapData[index-1];
-          right = mapData[index+1];
-          top = mapData[index - mapWidth];
-          bottom = mapData[index + mapWidth];
-          topLeft = mapData[index - mapWidth - 1];
-          topRight = mapData[index - mapWidth + 1];
-          bottomLeft = mapData[index + mapWidth - 1];
+          left        = mapData[index - 1];
+          right       = mapData[index + 1];
+          top         = mapData[index - mapWidth];
+          bottom      = mapData[index + mapWidth];
+          topLeft     = mapData[index - mapWidth - 1];
+          topRight    = mapData[index - mapWidth + 1];
+          bottomLeft  = mapData[index + mapWidth - 1];
           bottomRight = mapData[index + mapWidth + 1];
 
           //Compare it all and save pixels to modify later, if we change them now, algorithm will get screwed
@@ -396,13 +385,13 @@
 
       for (var i = map.length - 1; i >= 0; i--) {
         if (map[i] === type) {
-          var y = i / canvasW;
-          var x = i % canvasW;
+          var y = i / that.canvasW;
+          var x = i % that.canvasW;
           points.push({x: x, y: y });
         }
       }
 
-      //console.log(points);
+      //that.log(points);
       mapPointsCache[type] = points;
       return points;
     }
@@ -411,8 +400,8 @@
     function respawn(){
       // Transform all temporal paths into filled
       replaceValuesInMap('T','F');
-      myPlayer.X = lastPathX;
-      myPlayer.Y = lastPathY;
+      that.x = lastPathX;
+      that.y = lastPathY;
     }
 
     function addPointsByAreaCleared(percentageCleared){
@@ -432,7 +421,7 @@
         pointsMultiplier = 50;
       }
 
-      myPlayer.points += percentageCleared * pointsMultiplier;
+      that.points += percentageCleared * pointsMultiplier;
     }
 
     function clearMapPointsCache(){
@@ -441,11 +430,19 @@
 
     // Init code
 
-    var playerCanvas = createCanvas(canvasW, canvasH),
+    var playerCanvas = createCanvas(that.canvasW, that.canvasH),
         ctxPlayer = playerCanvas.getContext('2d'),
-        map = new Array(canvasW*canvasH),
-        imgData = ctxPlayer.getImageData(0,0, canvasW, canvasH);        
+        map = new Array(that.canvasW*that.canvasH),
+        imgData = ctxPlayer.getImageData(0,0, that.canvasW, that.canvasH);
 
-    return myPlayer;
+    that.update = update;
+    that.render = render;
+    that.checkCollision = checkCollision;
+    that.reset = reset;
+    that.isCollidingPath = isCollidingPath;
+    that.getFilledMapPoints = getFilledMapPoints;
+    that.getEmptyMapPoints = getEmptyMapPoints;   
+
+    return that;
   };
 }(this.LP = this.LP || {}));
