@@ -27,7 +27,37 @@
 	      return false;
 	    }
 
+	    // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object/122190#122190
+	    myHelpers.clone = function (obj) {
+	      if (obj === null || typeof(obj) !== 'object' || 'isActiveClone' in obj)
+	        return obj;
+
+	      if (obj instanceof Date)
+	        var temp = new obj.constructor(); //or new Date(obj);
+	      else
+	        var temp = obj.constructor();
+
+	      for (var key in obj) {
+	        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+	          obj['isActiveClone'] = null;
+	          temp[key] = myHelpers.clone(obj[key]);
+	          delete obj['isActiveClone'];
+	        }
+	      }
+
+	      return temp;
+	    }
+
 	    return myHelpers;
 	}();
+
+	// From "Javascript, the good parts"
+	Object.prototype.superior = function (name) {
+		var that = this,
+			method = that[name];
+		return function ( ) {
+			return method.apply(that, arguments);
+		};
+	};
 
 }(this.LP = this.LP || {}));

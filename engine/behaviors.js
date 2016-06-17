@@ -15,8 +15,8 @@
 				myBehavior.update = function (tFrame, dt){
 					if (!lastBehaviorChangeTime) lastBehaviorChangeTime = tFrame;
 
-					if (enemy.X - radius <= 0 || enemy.X + radius >= canvasW) enemy.directionX *= -1; 
-					if (enemy.Y - radius <= 0 || enemy.Y + radius >= canvasH) enemy.directionY *= -1; 
+					if (enemy.x - radius <= 0 || enemy.x + radius >= canvasW) enemy.directionX *= -1; 
+					if (enemy.y - radius <= 0 || enemy.y + radius >= canvasH) enemy.directionY *= -1; 
 
 					if (tFrame - lastDirectionChangeTime > (Math.random () * 5 + 4 ) * 1000){
 					enemy.directionY = Math.random ();
@@ -26,8 +26,8 @@
 					lastDirectionChangeTime = tFrame;
 					}
 
-					enemy.X += speed * enemy.directionX;
-					enemy.Y += speed * enemy.directionY;
+					enemy.x += speed * enemy.directionX;
+					enemy.y += speed * enemy.directionY;
 
 					if (changeCallback && (tFrame - lastBehaviorChangeTime > 10 * 1000)) changeCallback();
 			    };
@@ -46,8 +46,8 @@
 
 				myBehavior.update = function (tFrame, dt){
 
-					var dx = player.X - enemy.X;
-					var dy = player.Y - enemy.Y;
+					var dx = player.X - enemy.x;
+					var dy = player.Y - enemy.y;
 					var distance = Math.sqrt((dx*dx) + (dy*dy));
 					//this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
 
@@ -55,8 +55,8 @@
 					enemy.directionX = (dx/distance);
 					enemy.directionY = (dy/distance);
 
-					enemy.X += speed * enemy.directionX;
-					enemy.Y += speed * enemy.directionY;
+					enemy.x += speed * enemy.directionX;
+					enemy.y += speed * enemy.directionY;
 
 					// TODO: Fix getting stuck
 					// If we have a changeCallback defined and have collided the player or we are touching the path (we are getting stuck)
@@ -124,7 +124,7 @@
 
 				function fireBullet(xDirection, yDirection, tFrame){
 			      //console.log('firing bullet', xDirection, yDirection);
-			      myBehavior.bullets.push(LP.bullet(enemy.X, enemy.Y, xDirection, yDirection, canvasW, canvasH, player))
+			      myBehavior.bullets.push(LP.bullet(enemy.x, enemy.y, xDirection, yDirection, canvasW, canvasH, player))
 			      haveJustFired = true;
 			    }
 

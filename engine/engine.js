@@ -95,9 +95,16 @@
 			player.reset();
 			remainingTime = 180;
 
-			enemies.push (LP.circleEnemy (canvasW, canvasH, player));
-			enemies.push (LP.circleBumper(canvasW, canvasH, player));
-			enemies.push (LP.circleBumper(canvasW, canvasH, player));
+			var enemyOptions = {
+				canvasW : canvasW,
+				canvasH : canvasH,
+				player : player
+			};
+
+			enemies.push (LP.circleEnemy (enemyOptions));
+			enemies.push (LP.circleBumper(enemyOptions));
+			enemies.push (LP.circleBumper(enemyOptions));
+
   		}
 
 		function mainLoop (tFrame) {
