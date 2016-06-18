@@ -93,10 +93,12 @@
 		      }
 
 		      if (!haveJustFired){        
-		        for (var angle = 0; angle <= 360; angle += 360/18){
+		        for (var angle = 0; angle < 360; angle += 360/18){
 		          // We find the coordinates of the normalized vector (legth = 1)
-		          var bx = Math.sin(angle * Math.PI / 180);
-		          var by = Math.cos(angle * Math.PI / 180);
+		          // We need to use toFixed to avoid Javascript limitations with floating point numbers
+		          //http://www.codingforums.com/javascript-programming/191136-js-math-sin-problem.html
+		          var bx = Math.sin(angle * Math.PI / 180).toFixed(15);
+		          var by = Math.cos(angle * Math.PI / 180).toFixed(15);
 		          fireBullet ( bx, by, tFrame);
 		        } 
 		      }
@@ -121,7 +123,15 @@
 
 			function fireBullet(xDirection, yDirection, tFrame){
 		      //console.log('firing bullet', xDirection, yDirection);
-		      that.bullets.push(LP.bullet(enemy.x, enemy.y, xDirection, yDirection, enemy.canvasW, enemy.canvasH, enemy.player))
+		      that.bullets.push(LP.bullet({
+		      	x : enemy.x,
+		      	y : enemy.y,
+		      	directionX : xDirection,
+		      	directionY : yDirection,
+		      	canvasW : enemy.canvasW,
+		      	canvasH : enemy.canvasH,
+		      	player : enemy.player
+		      }));
 		      haveJustFired = true;
 		    }
 

@@ -8,8 +8,8 @@
     var that = {
         x : options.x,
         y : options.y,
-        directionX : 1,
-        directionY : 0,
+        directionX : options.directionX || 1,
+        directionY : options.directionY || 0,
         alive : true,
         radius : options.radius || 10,
         previousX : 0,
