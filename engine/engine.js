@@ -29,11 +29,12 @@
 			messagesElement = document.getElementById(messagesElementId);
 			initializeCanvas(canvasId);			
 			LP.initInput();
+			LP.initAudioEngine();
  			player = LP.player({canvasW : canvasW, canvasH : canvasH, input: LP.getInput()});
 
 			meter = new FPSMeter(document.getElementById(fpsMeterId), {position: 'absolute', theme: 'light', graph: 1, heat: 1});
 			resetLevel();
-
+			LP.audioEngine.trigger("music-game");
 			backgroundImgElement = new Image();
 			backgroundImgElement.onload = function(){mainLoop(0);};
 			//backgroundImgElement.src = "http://2.bp.blogspot.com/_wfgZeHnjCnc/SrpU5rgX8gI/AAAAAAAAAI4/ezQ3s5Zdbvk/s320/manga_6.jpg";
@@ -44,6 +45,7 @@
 		myEngine.playerDied = function(){
 			console.log("Player died");
 			myEngine.showMessage("You died :(");
+			LP.audioEngine.trigger("game-over");
 			resetLevel();			
 		};
 
@@ -53,6 +55,7 @@
 			if (clearedPercentage >= 80){
 				console.log("Win!");
 				myEngine.showMessage("You win!");
+				LP.audioEngine.trigger("win");
 				resetLevel();
 			}
 
@@ -60,6 +63,7 @@
 				remainingTime += 30;
 				nextAddTimePercentage += 10; // We add time each 10 now
 				myEngine.showMessage("Extra time!");
+				LP.audioEngine.trigger("extra-time");
 				console.log("Extra time added");
 			};
 
@@ -124,6 +128,7 @@
 					myEngine.playerDied();
 				} else if (remainingTime === 30){
 					myEngine.showMessage("Hurry up!!");
+					LP.audioEngine.trigger("hurry");
 				}
 			}
 

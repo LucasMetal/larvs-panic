@@ -191,6 +191,7 @@
       respawn();
 
       LP.engine.showMessage("Ouch!");
+      LP.audioEngine.trigger("touched");
       that.log("Hit! Remaining lives: ", that.lives, tFrame);
       if (that.lives === 0) LP.engine.playerDied();
       return true;      

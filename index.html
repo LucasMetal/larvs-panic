@@ -9,6 +9,7 @@
 <script type="text/javascript" src="engine/helpers.js"></script>
 <script type="text/javascript" src="engine/math.js"></script>
 <script type="text/javascript" src="engine/engine.js"></script>
+<script type="text/javascript" src="engine/audioEngine.js"></script>
 <script type="text/javascript" src="actors/gameObject.js"></script>
 <script type="text/javascript" src="actors/enemy.js"></script>
 <script type="text/javascript" src="actors/player.js"></script>
@@ -31,6 +32,9 @@
     <div id="fpsMeter" style="width:10%"></div>
     <div id="messages" style="margin-left:15%;float:left;"></div>
     <div id="stats" style='float:right;'></div>
+  </div>
+  <div id="options" style="margin-top: 50px; float:left;">
+    <input type="checkbox" onclick="LP.audioEngine.setMusic(this.checked);" id="playMusic" checked>Play Music
   </div>
   <br/>
    
