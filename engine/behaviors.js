@@ -123,6 +123,8 @@
 
 			function fireBullet(xDirection, yDirection, tFrame){
 		      //console.log('firing bullet', xDirection, yDirection);
+					LP.audioEngine.trigger("fire");
+
 		      that.bullets.push(LP.bullet({
 		      	x : enemy.x,
 		      	y : enemy.y,
