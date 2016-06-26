@@ -31,44 +31,44 @@
     sounds : [
       {
         name : "fire",
-        src : "/assets/audio/fire.wav",
+        src : "./assets/audio/fire.wav",
         volume: 1,
         loop: false
       },
       {
         name : "explosion",
-        src : "/assets/audio/explosion.wav",
+        src : "./assets/audio/explosion.wav",
         volume: 1,
         loop: false
       },
       {
         name : "game-over",
-        src : "/assets/audio/game-over.wav",
+        src : "./assets/audio/game-over.wav",
         volume: 1,
         loop: false
       },
       {
         name : "win",
-        src : "/assets/audio/win.wav",
+        src : "./assets/audio/win.wav",
         volume: 1,
         loop: false
       },
       {
         name : "hurry",
-        src : "/assets/audio/hurry.wav",
+        src : "./assets/audio/hurry.wav",
         volume: 1,
         loop: false
       },
       {
         name : "touched",
-        src : "/assets/audio/touched.wav",
+        src : "./assets/audio/touched.wav",
         volume: 1,
         loop: false
       }
     ],
     gameMusic : {
         name : "music-game",
-        src : "/assets/audio/music-game.mp3",
+        src : "./assets/audio/music-game.mp3",
         volume: 0.5, //Valid values 0 to 1
         loop: true //Should start over when finished
     },
